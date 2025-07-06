@@ -3,61 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Programme Vrigny is Party</title>
+  <title>Programme Vrigny is Party - Debug</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background-color: #7dc7c0; color: #083c5a; padding: 1rem; }
-    h1 { font-family: 'Pacifico', cursive; font-size: 2.5rem; text-align: center; margin-bottom: 1rem; color: #083c5a; }
-    .poster { background: #fff; border-radius: 20px; padding: 1rem; max-width: 600px; margin: auto; }
-    .day { margin-bottom: 1.5rem; }
-    .day-header { font-size: 1.5rem; color: #ff7f11; margin-bottom: 0.5rem; }
-    .events { list-style: none; padding-left: 0; }
-    .events li { display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid #eee; font-size: 1rem; }
-    .events li:last-child { border-bottom: none; }
-    .time { font-weight: bold; }
-    @media(max-width:600px) { .time { width:25%; } .events li { flex-direction: column; align-items: flex-start;} .events li .time { margin-bottom:0.2rem; } }
-  </style>
 </head>
 <body>
   <header><h1>Programme</h1></header>
-  <div class="poster" id="programme-container"></div>
+  <div id="programme-container"></div>
+  <script src="https://unpkg.com/tabletop@1.5.1/dist/tabletop.min.js"></script>
   <script>
-    async function fetchProgramme() {
-      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTkZaCI7l45MCO_nyB-D9JXPgIUBw8fvNOY2qGCGHmv0yKKJa5UTHpG5iAaBG_x6lFFEuYq3FgzO1t7/gviz/tq?gid=1252407730&tqx=out:json';
-      const res = await fetch(url);
-      const text = await res.text();
-      const json = JSON.parse(text.match(/\{[\s\S]*\}/)[0]);
-      const rows = json.table.rows.map(r => ({
-        jour: r.c[0].v,
-        heure: r.c[1] ? r.c[1].v : '',
-        activité: r.c[2] ? r.c[2].v : ''
-      }));
-      const grouped = {};
-      rows.forEach(e => {
-        if (!grouped[e.jour]) grouped[e.jour] = [];
-        grouped[e.jour].push(e);
-      });
-      const container = document.getElementById('programme-container');
-      container.innerHTML = '';
-      Object.keys(grouped).forEach(jour => {
-        const day = document.createElement('div');
-        day.className = 'day';
-        const hdr = document.createElement('div');
-        hdr.className = 'day-header';
-        hdr.textContent = jour;
-        day.appendChild(hdr);
-        const ul = document.createElement('ul');
-        ul.className = 'events';
-        grouped[jour].forEach(e => {
-          ul.insertAdjacentHTML('beforeend',
-            `<li><span class="time">${e.heure}</span><span>${e.activité}</span></li>`);
-        });
-        day.appendChild(ul);
-        container.appendChild(day);
-      });
-    }
-    fetchProgramme();
+    Tabletop.init({
+      key: '2PACX-1vTkZaCI7l45MCO_nyB-D9JXPgIUBw8fvNOY2qGCGHmv0yKKJa5UTHpG5iAaBG_x6lFFEuYq3FgzO1t7',
+      simpleSheet: false,
+      callback: function(data) {
+        console.log('--- Debug: list of sheets loaded for Programme ---');
+        console.log(Object.keys(data));
+        // Replace 'Programme' with the exact name shown above
+        var sheetName = Object.keys(data)[1] || Object.keys(data)[0];
+        console.log('Data from', sheetName, data[sheetName]);
+      }
+    });
   </script>
 </body>
 </html>
