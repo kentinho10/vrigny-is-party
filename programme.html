@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Programme Vrigny is Party</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/tabletop@1.5.1/dist/tabletop.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background-color: #7dc7c0; color: #083c5a; padding: 1rem; }
@@ -25,32 +24,37 @@
   <div class="poster" id="programme-container"></div>
 
   <script>
-    Tabletop.init({
-      key: '2PACX-1vTkZaCI7l45MCO_nyB-D9JXPgIUBw8fvNOY2qGCGHmv0yKKJa5UTHpG5iAaBG_x6lFFEuYq3FgzO1t7',
-      simpleSheet: false,
-      sheets: ['Programme'],  // charge uniquement l'onglet Programme
-      callback: function(data) {
-        const rows = data.Programme;
-        const grouped = {};
-        rows.forEach(e => {
-          if (!grouped[e.jour]) grouped[e.jour] = [];
-          grouped[e.jour].push(e);
+    // Fetch Programme data from published sheet
+    async function fetchProgramme() {
+      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTkZaCI7l45MCO_nyB-D9JXPgIUBw8fvNOY2qGCGHmv0yKKJa5UTHpG5iAaBG_x6lFFEuYq3FgzO1t7/gviz/tq?sheet=Programme&headers=1&tqx=out:json';
+      const res = await fetch(url);
+      const txt = await res.text();
+      const json = JSON.parse(txt.match(/\{[\s\S]*\}/)[0]);
+      const rows = json.table.rows.map(r => ({
+        jour: r.c[0].v,
+        heure: r.c[1].v,
+        activité: r.c[2].v
+      }));
+      const grouped = {};
+      rows.forEach(e => {
+        if (!grouped[e.jour]) grouped[e.jour] = [];
+        grouped[e.jour].push(e);
+      });
+      const container = document.getElementById('programme-container');
+      container.innerHTML = '';
+      for (const jour in grouped) {
+        const day = document.createElement('div'); day.className = 'day';
+        const hdr = document.createElement('div'); hdr.className = 'day-header'; hdr.textContent = jour;
+        day.appendChild(hdr);
+        const ul = document.createElement('ul'); ul.className = 'events';
+        grouped[jour].forEach(e => {
+          ul.insertAdjacentHTML('beforeend', `<li><span class="time">${e.heure}</span><span>${e.activité}</span></li>`);
         });
-        const container = document.getElementById('programme-container');
-        container.innerHTML = '';
-        for (const jour in grouped) {
-          const day = document.createElement('div'); day.className = 'day';
-          const hdr = document.createElement('div'); hdr.className = 'day-header'; hdr.textContent = jour;
-          day.appendChild(hdr);
-          const ul = document.createElement('ul'); ul.className = 'events';
-          grouped[jour].forEach(e => {
-            ul.insertAdjacentHTML('beforeend', `<li><span class="time">${e.heure}</span><span>${e.activité}</span></li>`);
-          });
-          day.appendChild(ul);
-          container.appendChild(day);
-        }
+        day.appendChild(ul);
+        container.appendChild(day);
       }
-    });
+    }
+    fetchProgramme();
   </script>
 </body>
 </html>

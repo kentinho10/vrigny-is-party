@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vrigny is Party</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <!-- Tabletop.js for Google Sheets integration -->
-  <script src="https://unpkg.com/tabletop@1.5.1/dist/tabletop.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
@@ -45,21 +43,23 @@
   </header>
 
   <script>
-    const SHEET_ID = '2PACX-1vTkZaCI7l45MCO_nyB-D9JXPgIUBw8fvNOY2qGCGHmv0yKKJa5UTHpG5iAaBG_x6lFFEuYq3FgzO1t7';
-    Tabletop.init({
-      key: SHEET_ID,
-      simpleSheet: false,
-      sheets: ['Home'],      // charge uniquement l'onglet Home
-      callback: function(data) {
-        const home = data.Home;
-        if (home && home[0] && home[0].texte) {
-          document.getElementById('title').textContent = home[0].texte;
-        }
-        if (home && home[1] && home[1].texte) {
-          document.getElementById('accroche').textContent = home[1].texte;
-        }
-      }
-    });
+    // Fetch data for Home from published Google Sheet
+    async function fetchHome() {
+      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTkZaCI7l45MCO_nyB-D9JXPgIUBw8fvNOY2qGCGHmv0yKKJa5UTHpG5iAaBG_x6lFFEuYq3FgzO1t7/gviz/tq?sheet=Home&headers=1&tqx=out:json';
+      const res = await fetch(url);
+      const txt = await res.text();
+      const json = JSON.parse(txt.match(/\{[\s\S]*\}/)[0]);
+      const rows = json.table.rows;
+      const map = {};
+      rows.forEach(r => {
+        const key = r.c[0].v;
+        const val = r.c[1].v;
+        map[key] = val;
+      });
+      if (map.titre) document.getElementById('title').textContent = map.titre;
+      if (map.accroche) document.getElementById('accroche').textContent = map.accroche;
+    }
+    fetchHome();
   </script>
 </body>
 </html>
