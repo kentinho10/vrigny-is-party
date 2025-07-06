@@ -4,92 +4,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Programme Vrigny is Party</title>
-  <link href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTkZaCI7l45MCO_nyB-D9JXPgIUBw8fvNOY2qGCGHmv0yKKJa5UTHpG5iAaBG_x6lFFEuYq3FgzO1t7/pubhtml?gid=1065686470&single=true" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/tabletop@1.5.1/dist/tabletop.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #7dc7c0;
-      color: #083c5a;
-      padding: 1rem;
-    }
-    h1, h2, h3 { font-family: 'Pacifico', cursive; }
-    h1 { font-size: 2.5rem; text-align: center; margin-bottom: 1rem; color: #083c5a; }
-    .poster {
-      background: #fff;
-      border-radius: 20px;
-      padding: 1rem;
-      max-width: 600px;
-      margin: auto;
-    }
-    .day {
-      margin-bottom: 1.5rem;
-    }
-    .day-header {
-      display: flex; align-items: center;
-      font-size: 1.5rem; color: #ff7f11;
-      margin-bottom: 0.5rem;
-    }
-    .day-header img {
-      width: 30px; height: 30px; margin-left: 0.5rem;
-    }
-    .events {
-      list-style: none; padding-left: 0;
-    }
-    .events li {
-      display: flex; justify-content: space-between;
-      padding: 0.3rem 0;
-      border-bottom: 1px solid #eee;
-      font-size: 1rem;
-    }
+    body { font-family: 'Inter', sans-serif; background-color: #7dc7c0; color: #083c5a; padding: 1rem; }
+    h1 { font-family: 'Pacifico', cursive; font-size: 2.5rem; text-align: center; margin-bottom: 1rem; color: #083c5a; }
+    .poster { background: #fff; border-radius: 20px; padding: 1rem; max-width: 600px; margin: auto; }
+    .day { margin-bottom: 1.5rem; }
+    .day-header { display: flex; align-items: center; font-size: 1.5rem; color: #ff7f11; margin-bottom: 0.5rem; }
+    .day-header img { width: 30px; height: 30px; margin-left: 0.5rem; }
+    .events { list-style: none; padding-left: 0; }
+    .events li { display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid #eee; font-size: 1rem; }
     .events li:last-child { border-bottom: none; }
     .time { font-weight: bold; }
-    @media(max-width:600px) {
-      .time { width: 25%; }
-      .events li { flex-direction: column; align-items: flex-start; }
-      .events li .time { margin-bottom: 0.2rem; }
-    }
+    @media(max-width:600px) { .time { width:25%; } .events li { flex-direction: column; align-items: flex-start;} .events li .time { margin-bottom:0.2rem; } }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Programme</h1>
-  </header>
-  <div class="poster">
-    <div class="day">
-      <div class="day-header">
-        <span>Vendredi</span>
-        <img src="icons/cocktail.svg" alt="Apéro">
-      </div>
-      <ul class="events">
-        <li><span class="time">18h</span><span>Arrivée</span></li>
-        <li><span class="time">19h</span><span>Apéro</span></li>
-        <li><span class="time">21h</span><span>Jeux</span></li>
-        <li><span class="time">00h</span><span>Piscine</span></li>
-      </ul>
-    </div>
-    <div class="day">
-      <div class="day-header">
-        <span>Samedi</span>
-        <img src="icons/petanque.svg" alt="Pétanque">
-      </div>
-      <ul class="events">
-        <li><span class="time">10h</span><span>Piscine</span></li>
-        <li><span class="time">15h</span><span>Déj'</span></li>
-        <li><span class="time">20h</span><span>Pétanque</span></li>
-      </ul>
-    </div>
-    <div class="day">
-      <div class="day-header">
-        <span>Dimanche</span>
-        <img src="icons/pancakes.svg" alt="Brunch">
-      </div>
-      <ul class="events">
-        <li><span class="time">10h</span><span>Brunch</span></li>
-        <li><span class="time">13h</span><span>Détente</span></li>
-        <li><span class="time">15h</span><span>Départ</span></li>
-      </ul>
-    </div>
-  </div>
+  <header><h1>Programme</h1></header>
+  <div class="poster" id="programme-container"></div>
+  <script>
+    const SHEET_ID = '2PACX-1vTkZaCI7l45MCO_nyB-D9JXPgIUBw8fvNOY2qGCGHmv0yKKJa5UTHpG5iAaBG_x6lFFEuYq3FgzO1t7';
+    Tabletop.init({
+      key: SHEET_ID,
+      simpleSheet: false,
+      callback: data => {
+        const rows = data.Programme;
+        const grouped = {};
+        rows.forEach(e => { if (!grouped[e.jour]) grouped[e.jour]=[]; grouped[e.jour].push(e); });
+        const container = document.getElementById('programme-container');
+        for (let jour in grouped) {
+          const day = document.createElement('div'); day.className='day';
+          const hdr = document.createElement('div'); hdr.className='day-header';
+          hdr.innerHTML=`<span>${jour}</span>`;
+          day.appendChild(hdr);
+          const ul = document.createElement('ul'); ul.className='events';
+          grouped[jour].forEach(e=>{
+            ul.insertAdjacentHTML('beforeend',`<li><span class="time">${e.heure}</span><span>${e.activité}</span></li>`);
+          });
+          day.appendChild(ul); container.appendChild(day);
+        }
+      }
+    });
+  </script>
 </body>
 </html>
