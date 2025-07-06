@@ -22,11 +22,8 @@
     header h1, header p, .btn { position: relative; z-index: 2; }
     header h1 { font-family: 'Pacifico', cursive; font-size: 3rem; color: #fff; margin-bottom: 1rem; }
     header p { color: #f0f0f0; margin-bottom: 2rem; font-size: 1.1rem; }
-    .btn {
-      background-color: #ff5f7e; color: #fff; padding: 0.8rem 1.5rem;
-      font-size: 1rem; border: none; border-radius: 50px;
-      text-decoration: none;
-    }
+    .btn { background-color: #ff5f7e; color: #fff; padding: 0.8rem 1.5rem;
+      font-size: 1rem; border: none; border-radius: 50px; text-decoration: none; }
     .btn:hover { background-color: #e04866; }
     @media(max-width:600px) {
       header h1 { font-size:2rem; }
@@ -41,20 +38,16 @@
     <p id="accroche">22 – 24 août · Soirée, Alcool & Chill Vibes 🍹🏖️</p>
     <a href="programme.html" class="btn">Programme</a>
   </header>
-
   <script>
-    // Fetch data for Home from published Google Sheet
     async function fetchHome() {
-      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTkZaCI7l45MCO_nyB-D9JXPgIUBw8fvNOY2qGCGHmv0yKKJa5UTHpG5iAaBG_x6lFFEuYq3FgzO1t7/gviz/tq?sheet=Home&headers=1&tqx=out:json';
+      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTkZaCI7l45MCO_nyB-D9JXPgIUBw8fvNOY2qGCGHmv0yKKJa5UTHpG5iAaBG_x6lFFEuYq3FgzO1t7/gviz/tq?gid=0&tqx=out:json';
       const res = await fetch(url);
-      const txt = await res.text();
-      const json = JSON.parse(txt.match(/\{[\s\S]*\}/)[0]);
+      const text = await res.text();
+      const json = JSON.parse(text.match(/\{[\s\S]*\}/)[0]);
       const rows = json.table.rows;
       const map = {};
       rows.forEach(r => {
-        const key = r.c[0].v;
-        const val = r.c[1].v;
-        map[key] = val;
+        map[r.c[0].v] = r.c[1] ? r.c[1].v : '';
       });
       if (map.titre) document.getElementById('title').textContent = map.titre;
       if (map.accroche) document.getElementById('accroche').textContent = map.accroche;
