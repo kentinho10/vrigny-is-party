@@ -2,33 +2,81 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Classement - La Kaz à Fête !</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Classement</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #ffeaa7, #fab1a0);
+      color: #2d3436;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      color: #d63031;
+    }
+
+    .ranking {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .player-card {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 180px;
+      transition: transform 0.2s;
+    }
+
+    .player-card:hover {
+      transform: scale(1.05);
+    }
+
+    .player-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 0.5rem;
+    }
+
+    .player-card .name {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .player-card .points {
+      font-size: 1rem;
+      color: #6c5ce7;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🏆 Classement</h1>
-    <div id="classement-list"></div>
-  </div>
+  <h1>🏆 Classement</h1>
+  <div class="ranking" id="ranking"></div>
 
   <script>
-    const data = JSON.parse(localStorage.getItem("classement") || "[]");
+    const rankingEl = document.getElementById("ranking");
+    let players = JSON.parse(localStorage.getItem("players") || "[]");
+    players.sort((a, b) => b.points - a.points);
 
-    data.sort((a, b) => b.points - a.points);
-
-    const container = document.getElementById("classement-list");
-
-    data.forEach((player, index) => {
-      const row = document.createElement("div");
-      row.className = "player-row";
-      row.innerHTML = `
-        <div class="rank">#${index + 1}</div>
-        <img src="${player.photo}" alt="photo" />
-        <div>${player.name}</div>
-        <div><strong>${player.points} pts</strong></div>
-      `;
-      container.appendChild(row);
+    players.forEach(player => {
+      const div = document.createElement("div");
+      div.className = "player-card";
+      div.innerHTML = \`
+        <img src="\${player.photo}" alt="\${player.name}" />
+        <div class="name">\${player.name}</div>
+        <div class="points">\${player.points} pts</div>
+      \`;
+      rankingEl.appendChild(div);
     });
   </script>
 </body>
