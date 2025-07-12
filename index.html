@@ -4,25 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>La Kaz à Fête !</title>
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="video-background">
-    <video autoplay muted loop playsinline>
-      <source src="background.mp4" type="video/mp4">
-      Votre navigateur ne supporte pas la vidéo.
-    </video>
-    <div class="overlay">
-      <h1>La Kaz à Fête !</h1>
-      <p>22–24 août 2025</p>
-      <button class="enter-btn" onclick="enterSite()">Entrer</button>
+
+  <video autoplay muted loop id="background-video">
+    <source src="background.mp4" type="video/mp4" />
+    Ton navigateur ne supporte pas la vidéo.
+  </video>
+
+  <div class="content">
+    <h1 class="title">🎉 La Kaz à Fête ! 🎉</h1>
+    <div class="cta-buttons">
+      <a href="programme.html" class="btn">📅 Programme</a>
+      <a href="classement.html" class="btn">🏆 Classement</a>
     </div>
   </div>
 
-  <script>
-    function enterSite() {
-      window.location.href = "programme.html";
-    }
-  </script>
 </body>
 </html>

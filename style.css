@@ -1,60 +1,70 @@
-body, html {
+* {
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif;
+  box-sizing: border-box;
+}
+
+body, html {
   height: 100%;
-  overflow: hidden;
+  font-family: 'Baloo 2', cursive;
+  color: white;
 }
 
-.video-background {
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
-}
-
-video {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+#background-video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
   min-width: 100%;
   min-height: 100%;
-  width: auto;
-  height: auto;
-  transform: translate(-50%, -50%);
+  object-fit: cover;
   z-index: -1;
-  filter: brightness(0.6);
 }
 
-.overlay {
-  position: relative;
-  z-index: 1;
-  height: 100%;
+.content {
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white;
   text-align: center;
-  padding: 0 20px;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
-.overlay h1 {
-  font-size: 3em;
-  margin-bottom: 10px;
-  text-shadow: 0 0 20px #ff66c4;
+.title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 5px #000;
+  animation: float 3s ease-in-out infinite;
 }
 
-.overlay p {
-  font-size: 1.2em;
-  margin-bottom: 30px;
+.cta-buttons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.enter-btn {
-  background-color: #ff66c4;
+.btn {
+  background-color: rgba(255, 255, 255, 0.2);
   color: white;
-  border: none;
-  padding: 15px 30px;
-  border-radius: 50px;
-  font-size: 1em;
-  cursor: pointer;
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  text-decoration: none;
+  font-weight: bold;
+  border: 2px solid white;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.btn:hover {
+  background-color: white;
+  color: #000;
+  transform: scale(1.05);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
