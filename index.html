@@ -1,61 +1,28 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vrigny is Party</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
-    body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
-    header {
-      position: relative; width: 100%; height: 100vh;
-      background: url('bg-party.jpg') center/cover no-repeat;
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: center; text-align: center;
-    }
-    header::before {
-      content: ''; position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); z-index: 1;
-    }
-    header h1, header p, .btn { position: relative; z-index: 2; }
-    header h1 { font-family: 'Pacifico', cursive; font-size: 3rem; color: #fff; margin-bottom: 1rem; }
-    header p { color: #f0f0f0; margin-bottom: 2rem; font-size: 1.1rem; }
-    .btn { background-color: #ff5f7e; color: #fff; padding: 0.8rem 1.5rem;
-      font-size: 1rem; border: none; border-radius: 50px; text-decoration: none; }
-    .btn:hover { background-color: #e04866; }
-    @media(max-width:600px) {
-      header h1 { font-size:2rem; }
-      header p  { font-size:1rem; }
-      .btn      { font-size:0.9rem; padding:0.6rem 1.2rem; }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>La Kaz à Fête !</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1 id="title">Vrigny is Party</h1>
-    <p id="accroche">22 – 24 août · Soirée, Alcool & Chill Vibes 🍹🏖️</p>
-    <a href="programme.html" class="btn">Programme</a>
-  </header>
+  <div class="video-background">
+    <video autoplay muted loop playsinline>
+      <source src="background.mp4" type="video/mp4">
+      Votre navigateur ne supporte pas la vidéo.
+    </video>
+    <div class="overlay">
+      <h1>La Kaz à Fête !</h1>
+      <p>22–24 août 2025</p>
+      <button class="enter-btn" onclick="enterSite()">Entrer</button>
+    </div>
+  </div>
+
   <script>
-    async function fetchHome() {
-      const SHEET_ID = '1wGVmmOqedsPU-6I6IRH4hJf-2OkTxuD-AqY8wORtpr8';
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=1252407730&tqx=out:json`;
-      const res = await fetch(url);
-      const text = await res.text();
-      const json = JSON.parse(text.match(/\{[\s\S]*\}/)[0]);
-      const rows = json.table.rows || [];
-      const map = {};
-      rows.forEach(r => {
-        const key = r.c[0]?.v;
-        const val = r.c[1]?.v;
-        if (key) map[key] = val;
-      });
-      if (map.titre) document.getElementById('title').textContent = map.titre;
-      if (map.accroche) document.getElementById('accroche').textContent = map.accroche;
+    function enterSite() {
+      window.location.href = "programme.html";
     }
-    fetchHome();
   </script>
 </body>
 </html>
