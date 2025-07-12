@@ -1,13 +1,10 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
 body, html {
-  height: 100%;
+  margin: 0;
+  padding: 0;
   font-family: 'Baloo 2', cursive;
-  color: white;
+  height: 100%;
+  overflow: hidden;
 }
 
 #background-video {
@@ -16,55 +13,48 @@ body, html {
   bottom: 0;
   min-width: 100%;
   min-height: 100%;
-  object-fit: cover;
   z-index: -1;
 }
 
 .content {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
-  padding: 1rem;
-  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  text-shadow: 2px 2px 5px #000;
 }
 
 .title {
-  font-size: 3.5rem;
-  font-weight: 700;
-  text-shadow: 2px 2px 5px #000;
-  animation: float 3s ease-in-out infinite;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.countdown {
+  font-size: 2rem;
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 1px 1px 3px #000;
 }
 
 .cta-buttons {
   margin-top: 2rem;
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .btn {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
+  display: inline-block;
   padding: 1rem 2rem;
-  border-radius: 30px;
+  margin: 0 1rem;
   font-size: 1.2rem;
+  background: #ff4081;
+  color: white;
   text-decoration: none;
-  font-weight: bold;
-  border: 2px solid white;
-  transition: background 0.3s, transform 0.2s;
+  border-radius: 8px;
+  transition: background 0.3s ease;
 }
 
 .btn:hover {
-  background-color: white;
-  color: #000;
-  transform: scale(1.05);
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  background: #e91e63;
 }

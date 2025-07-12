@@ -9,18 +9,44 @@
 </head>
 <body>
 
-  <video autoplay muted loop id="background-video">
+  <video autoplay muted loop playsinline id="background-video">
     <source src="background.mp4" type="video/mp4" />
     Ton navigateur ne supporte pas la vidéo.
   </video>
 
   <div class="content">
     <h1 class="title">🎉 La Kaz à Fête ! 🎉</h1>
+    <div id="countdown" class="countdown"></div>
     <div class="cta-buttons">
       <a href="programme.html" class="btn">📅 Programme</a>
       <a href="classement.html" class="btn">🏆 Classement</a>
     </div>
   </div>
+
+<script>
+  const countdown = document.getElementById("countdown");
+  const targetDate = new Date("2025-08-22T18:00:00").getTime();
+
+  const updateCountdown = () => {
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+    if (distance < 0) {
+      countdown.innerHTML = "🎊 C’est parti !";
+      return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    countdown.innerHTML = `🕒 ${days}j ${hours}h ${minutes}m ${seconds}s`;
+  };
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
 
 </body>
 </html>
