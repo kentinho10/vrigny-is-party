@@ -1,13 +1,11 @@
-
-body, html {
+/* --- Styles généraux --- */
+body {
   margin: 0;
   padding: 0;
-  font-family: 'Baloo 2', cursive;
-  height: 100%;
-  overflow: hidden;
+  font-family: sans-serif;
+  overflow-x: hidden;
 }
-
-#background-video {
+#bg-video {
   position: fixed;
   right: 0;
   bottom: 0;
@@ -15,62 +13,63 @@ body, html {
   min-height: 100%;
   z-index: -1;
 }
-
-.content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+header {
   text-align: center;
-  color: white;
-  text-shadow: 2px 2px 5px #000;
+  padding: 2rem;
 }
-
-.title {
+header .title {
   font-size: 3rem;
+  color: #fff;
+  text-shadow: 2px 4px 8px rgba(0,0,0,0.5);
   margin-bottom: 1rem;
 }
-
-.countdown {
-  font-size: 2rem;
-  margin-top: 1rem;
-  font-weight: bold;
-  color: #FFD700;
-  text-shadow: 1px 1px 3px #000;
-}
-
-.cta-buttons {
-  margin-top: 2rem;
-}
-
-.btn {
-  display: inline-block;
-  padding: 1rem 2rem;
+header nav a {
+  color: #fff;
   margin: 0 1rem;
-  font-size: 1.2rem;
-  background: #ff4081;
-  color: white;
   text-decoration: none;
-  border-radius: 8px;
-  transition: background 0.3s ease;
+  font-weight: bold;
 }
 
-.btn:hover {
-  background: #e91e63;
+/* --- Flip-clock pastel pour programme.html --- */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+.flip-clock {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(80px,1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+.flip-card {
+  font-family: 'Orbitron', sans-serif;
+  background: #f0f8ff;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.flip-card .label {
+  font-size: 0.8rem;
+  color: #666;
+}
+.flip-card .value {
+  font-size: 2rem;
+  color: #5a189a;
 }
 
-.tropical-title {
-  font-family: 'Pacifico', cursive;
-  font-size: 4rem;
-  color: #10b981;
-  text-shadow: 2px 4px 12px #0003;
-  margin-bottom: 1.5rem;
+/* --- Tableaux classement/admin --- */
+table {
+  width: 90%;
+  margin: 1rem auto;
+  border-collapse: collapse;
 }
-
-.compte-rembourse {
-  font-family: 'Pacifico', cursive;
-  font-size: 2.5rem;
-  color: #f59e42;
-  text-shadow: 1px 2px 8px #0002;
-  margin-bottom: 2rem;
+th, td {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+button {
+  padding: 0.3rem 0.6rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
