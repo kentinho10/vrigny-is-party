@@ -27,23 +27,23 @@
       z-index: -1;
       opacity: 0.6;
     }
-    /* Header transparent avec moins de padding bas */
+    /* Header avec padding réduit en bas */
     header {
       position: relative;
       padding: 2rem 1rem 0.5rem;
       z-index: 1;
     }
-    /* Titre tropical pastel en gradient */
+    /* Titre tropical en gradient pastel */
     .title {
       font-family: 'Pacifico', cursive;
       font-size: 3rem;
       margin: 0;
       background: linear-gradient(90deg,
-        #FFB3BA 0%,  /* rose pastel */
-        #FFDFBA 25%, /* pêche clair */
-        #E3F2FD 50%, /* bleu pastel */
-        #E8F5E9 75%, /* vert menthe */
-        #FFF3E0 100% /* jaune doux */
+        #FFB3BA 0%,   /* rose pastel */
+        #FFDFBA 25%,  /* pêche clair */
+        #E3F2FD 50%,  /* bleu pastel */
+        #E8F5E9 75%,  /* vert menthe */
+        #FFF3E0 100%  /* jaune doux */
       );
       -webkit-background-clip: text;
       background-clip: text;
@@ -51,7 +51,6 @@
       text-shadow: 1px 2px 4px rgba(0,0,0,0.1);
     }
     .hero {
-      /* Rapprochement sous le titre */
       margin-top: 0;
       display: flex; flex-direction: column;
       align-items: center; justify-content: flex-start;
@@ -61,9 +60,12 @@
       font-size: 2rem;
       margin: 0.5rem 0 1rem;
     }
+    /* CTA buttons */
     .cta-buttons {
-      display: flex; gap: 1rem;
-      flex-wrap: wrap; justify-content: center;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
       margin-bottom: 1.5rem;
     }
     .cta-btn {
@@ -86,12 +88,14 @@
     .cta-btn:hover {
       background: rgba(111,66,193,0.1);
     }
+    /* Teaser texte */
     .countdown-teaser {
       font-family: 'Pacifico', cursive;
       font-size: 1.5rem;
       color: #6F42C1;
       margin-bottom: 1rem;
     }
+    /* Compte à rebours */
     .countdown {
       display: flex; flex-wrap: wrap;
       justify-content: center; align-items: center;
@@ -143,10 +147,7 @@
 <body>
 
   <!-- Vidéo de fond optimisée -->
-  <video
-    autoplay muted loop playsinline
-    id="bg-video"
-  >
+  <video autoplay muted loop playsinline id="bg-video">
     <source src="background.mp4" type="video/mp4">
   </video>
 
@@ -187,24 +188,10 @@
     </section>
   </main>
 
+  <!-- Script de compte à rebours et relance vidéo -->
   <script>
-    // Date cible : 22 août 2025 à 22h
-    const target = new Date(2025, 7, 22, 22, 0, 0);
+    // Date cible : 22 août 2025 à 20h
+    const target = new Date('2025-08-22T20:00:00');
 
     function updateCountdown() {
-      const now = new Date();
-      const diff = target - now;
-      if (diff <= 0) {
-        document.querySelector('.countdown').innerHTML =
-          '<h2>L’événement a commencé !</h2>';
-        clearInterval(timer);
-        return;
-      }
-      const days    = Math.floor(diff / 1000 / 60 / 60 / 24);
-      const hours   = Math.floor(diff / 1000 / 60 / 60 % 24);
-      const minutes = Math.floor(diff / 1000 / 60 % 60);
-      const seconds = Math.floor(diff / 1000 % 60);
-
-      document.getElementById('days').textContent    = days;
-      document.getElementById('hours').textContent   = String(hours).padStart(2,'0');
-      document.getElementById(
+      const now  = new Date
