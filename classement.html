@@ -2,118 +2,96 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Classement des joueurs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Orbitron&display=swap" rel="stylesheet">
+  <title>Classement</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Orbitron&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body { margin:0; padding:0; font-family:sans-serif; background:#FAF9F6; color:#333; text-align:center }
-    header { padding:1.5rem 1rem 0 }
-    h1 { margin:0; font-family:'Pacifico', cursive; color:#6F42C1; font-size:2rem }
-    .actions { margin:1rem 0 }
-    .actions button { padding:0.5rem 1rem; background:#6F42C1; color:#fff; border:none; border-radius:4px; cursor:pointer }
-    .avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:0.5rem }
-    .podium { display:flex; justify-content:center; align-items:flex-end; gap:1rem; margin:2rem 1rem }
-    .podium .place { flex:1; background:#fff; border-radius:8px 8px 0 0; box-shadow:0 4px 12px rgba(0,0,0,0.05); padding-top:1rem }
-    .podium .place[data-place="1"] { order:2; background:#FFF3E0 }
-    .podium .place[data-place="2"] { order:1; background:#FFEBEE }
-    .podium .place[data-place="3"] { order:3; background:#E3F2FD }
-    .label { font-size:0.8rem; color:#666 }
-    .name { display:flex; align-items:center; justify-content:center; font-family:'Pacifico', cursive; font-size:1.2rem; margin:0.5rem 0 }
-    .score { font-family:'Orbitron', sans-serif; font-size:1.5rem; margin-bottom:1rem }
-    .podium button { background:transparent; border:none; cursor:pointer; font-size:1rem }
-    .others { width:90%; margin:0 auto 2rem; border-collapse:collapse }
-    .others th, .others td { padding:0.5rem; border-bottom:1px solid #ddd; text-align:left }
-    .others th { font-weight:600; color:#555 }
-    .others td button { background:transparent; border:none; cursor:pointer; font-size:1rem; vertical-align:middle }
-    @media (max-width:600px) {
-      .podium { flex-direction:column-reverse; align-items:center }
-      .podium .place { width:80%; margin-bottom:1rem }
-      .others { width:100% }
-    }
-  </style>
-</head>
-<body>
-
-  <header><h1>Classement des joueurs</h1></header>
-
-  <div class="actions">
-    <button onclick="location.href='index.html'">← Accueil</button>
-  </div>
-
-  <div class="podium" id="podium"></div>
-
-  <table class="others" id="others">
-    <thead>
-      <tr><th>Rang</th><th>Nom</th><th>Points</th><th>Modifier</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <script>
-    let players = JSON.parse(localStorage.getItem('players')||'[]');
-    players.sort((a,b)=>b.score - a.score);
-
-    function render(){
-      const podiumEl = document.getElementById('podium'),
-            tbody     = document.querySelector('#others tbody');
-      podiumEl.innerHTML = '';
-      tbody.innerHTML = '';
-
-      // Podium
-      for(let i=0; i<3; i++){
-        const p = players[i];
-        const div = document.createElement('div');
-        div.className='place'; div.dataset.place=i+1;
-        if(p){
-          const img = p.avatar
-            ? `<img src="${p.avatar}" alt="${p.name}" class="avatar">`
-            : '';
-          div.innerHTML=`
-            <div class="label">Place ${i+1}</div>
-            <div class="name">${img}${p.name}</div>
-            <div class="score">${p.score} pts</div>
-            <button onclick="edit(${i})">✏️</button>
-          `;
-        } else {
-          div.innerHTML=`
-            <div class="label">Place ${i+1}</div>
-            <div class="name">—</div>
-          `;
-        }
-        podiumEl.appendChild(div);
-      }
-
-      // Les autres
-      for(let i=3; i<players.length; i++){
-        const p = players[i];
-        const tr = document.createElement('tr');
-        const img = p.avatar
-          ? `<img src="${p.avatar}" alt="${p.name}" class="avatar">`
-          : '';
-        tr.innerHTML=`
-          <td>${i+1}</td>
-          <td>${img}${p.name}</td>
-          <td>${p.score}</td>
-          <td><button onclick="edit(${i})">✏️</button></td>
-        `;
-        tbody.appendChild(tr);
-      }
+    /* --- Reset & Base --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #140F2D;
+      color: #FFF;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
     }
 
-    function edit(idx){
-      const p  = players[idx];
-      const np = prompt(`Nouveaux points pour ${p.name}`, p.score);
-      if(np!==null){
-        players[idx].score = parseInt(np,10);
-        localStorage.setItem('players', JSON.stringify(players));
-        players.sort((a,b)=>b.score - a.score);
-        render();
-      }
+    /* --- Conteneur principal --- */
+    .leaderboard {
+      width: 100%;
+      max-width: 360px;
+      background: #1F1832;
+      border-radius: 24px;
+      overflow: hidden;
     }
 
-    render();
-  </script>
+    /* --- En-tête --- */
+    .leaderboard-header {
+      background: linear-gradient(90deg, #FF8AA1, #FFCF8D);
+      padding: 1rem;
+      text-align: center;
+      font-family: 'Pacifico', cursive;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+    }
 
-</body>
-</html>
+    /* --- Liste --- */
+    .leaderboard-list {
+      list-style: none;
+      margin: 0;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.05);
+      padding: 0.75rem 1rem;
+      border-radius: 16px;
+      transition: background 0.2s;
+    }
+    .leaderboard-item:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .leaderboard-item .left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .rank {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      width: 1.5rem;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #FFF;
+    }
+
+    .name {
+      flex: 1;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      text-transform: capitalize;
+    }
+
+    .score {
+      font-family: 'Orbitron', san
