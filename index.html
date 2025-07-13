@@ -27,38 +27,47 @@
       z-index: -1;
       opacity: 0.6;
     }
+    /* Header transparent avec moins de padding bas */
     header {
       position: relative;
-      padding: 2rem 1rem;
+      padding: 2rem 1rem 0.5rem;
       z-index: 1;
     }
+    /* Titre tropical pastel en gradient */
     .title {
       font-family: 'Pacifico', cursive;
       font-size: 3rem;
-      color: #6F42C1;
       margin: 0;
-      text-shadow: 1px 2px 4px rgba(0,0,0,0.2);
+      background: linear-gradient(90deg,
+        #FFB3BA 0%,  /* rose pastel */
+        #FFDFBA 25%, /* pêche clair */
+        #E3F2FD 50%, /* bleu pastel */
+        #E8F5E9 75%, /* vert menthe */
+        #FFF3E0 100% /* jaune doux */
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 1px 2px 4px rgba(0,0,0,0.1);
     }
     .hero {
-      min-height: 60vh;
+      /* Rapprochement sous le titre */
+      margin-top: 0;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 2rem 1rem;
+      align-items: center; justify-content: flex-start;
+      padding: 1.5rem 1rem 2rem;
     }
     .hero h2 {
       font-size: 2rem;
-      margin-bottom: 1rem;
+      margin: 0.5rem 0 1rem;
     }
     .cta-buttons {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 2rem;
+      display: flex; gap: 1rem;
+      flex-wrap: wrap; justify-content: center;
+      margin-bottom: 1.5rem;
     }
     .cta-btn {
       position: relative;
-      display: inline-block;
       padding: 0.75rem 1.5rem;
       font-size: 1rem;
       color: #fff;
@@ -86,9 +95,9 @@
     .countdown {
       display: flex; flex-wrap: wrap;
       justify-content: center; align-items: center;
-      padding: 1rem;
+      padding: 0 1rem 2rem;
       max-width: 600px;
-      margin: 0 auto 2rem;
+      margin: 0 auto;
     }
     .countdown-card {
       background: #fff;
@@ -120,8 +129,7 @@
         font-size: 0.9rem;
       }
       .countdown-card {
-        min-width: 50px;
-        padding: 0.75rem;
+        min-width: 50px; padding: 0.75rem;
       }
       .countdown-card .value {
         font-size: 1.5rem;
@@ -199,20 +207,4 @@
 
       document.getElementById('days').textContent    = days;
       document.getElementById('hours').textContent   = String(hours).padStart(2,'0');
-      document.getElementById('minutes').textContent = String(minutes).padStart(2,'0');
-      document.getElementById('seconds').textContent = String(seconds).padStart(2,'0');
-    }
-
-    updateCountdown();
-    const timer = setInterval(updateCountdown, 1000);
-
-    // Relance la vidéo au retour sur la page
-    const bg = document.getElementById('bg-video');
-    window.addEventListener('pageshow', () => bg.play().catch(() => {}));
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) bg.play().catch(() => {});
-    });
-  </script>
-
-</body>
-</html>
+      document.getElementById(
