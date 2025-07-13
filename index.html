@@ -18,32 +18,25 @@
       background: #FAF9F6;
       text-align: center;
     }
-    /* Vidéo de fond optimisée */
+    /* Vidéo de fond */
     #bg-video {
       pointer-events: none;
       position: fixed; top: 0; left: 0;
       width: 100%; height: 100%;
-      object-fit: cover;
-      z-index: -1;
+      object-fit: cover; z-index: -1;
       opacity: 0.6;
     }
-    /* Header avec padding réduit en bas */
     header {
       position: relative;
       padding: 2rem 1rem 0.5rem;
       z-index: 1;
     }
-    /* Titre tropical en gradient pastel */
     .title {
       font-family: 'Pacifico', cursive;
-      font-size: 3rem;
-      margin: 0;
+      font-size: 3rem; margin: 0;
       background: linear-gradient(90deg,
-        #FFB3BA 0%,   /* rose pastel */
-        #FFDFBA 25%,  /* pêche clair */
-        #E3F2FD 50%,  /* bleu pastel */
-        #E8F5E9 75%,  /* vert menthe */
-        #FFF3E0 100%  /* jaune doux */
+        #FFB3BA 0%, #FFDFBA 25%, #E3F2FD 50%,
+        #E8F5E9 75%, #FFF3E0 100%
       );
       -webkit-background-clip: text;
       background-clip: text;
@@ -57,28 +50,18 @@
       padding: 1.5rem 1rem 2rem;
     }
     .hero h2 {
-      font-size: 2rem;
-      margin: 0.5rem 0 1rem;
+      font-size: 2rem; margin: 0.5rem 0 1rem;
     }
-    /* CTA buttons */
     .cta-buttons {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: flex; gap: 1rem;
+      flex-wrap: wrap; justify-content: center;
       margin-bottom: 1.5rem;
     }
     .cta-btn {
-      position: relative;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      color: #fff;
-      background: transparent;
-      text-decoration: none;
-      font-weight: 600;
-      border: 2px solid #6F42C1;
-      border-radius: 6px;
-      overflow: hidden;
+      padding: 0.75rem 1.5rem; font-size: 1rem;
+      color: #fff; background: transparent;
+      text-decoration: none; font-weight: 600;
+      border: 2px solid #6F42C1; border-radius: 6px;
       animation: pulseBorder 2.5s ease-in-out infinite;
     }
     @keyframes pulseBorder {
@@ -88,24 +71,19 @@
     .cta-btn:hover {
       background: rgba(111,66,193,0.1);
     }
-    /* Teaser texte */
     .countdown-teaser {
       font-family: 'Pacifico', cursive;
-      font-size: 1.5rem;
-      color: #6F42C1;
+      font-size: 1.5rem; color: #6F42C1;
       margin-bottom: 1rem;
     }
-    /* Compte à rebours */
     .countdown {
       display: flex; flex-wrap: wrap;
       justify-content: center; align-items: center;
-      padding: 0 1rem 2rem;
-      max-width: 600px;
+      padding: 0 1rem 2rem; max-width: 600px;
       margin: 0 auto;
     }
     .countdown-card {
-      background: #fff;
-      margin: 0.5rem; padding: 1rem;
+      background: #fff; margin: 0.5rem; padding: 1rem;
       min-width: 70px; border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
@@ -113,40 +91,27 @@
     .countdown-card:nth-child(2) { background: #E3F2FD; }
     .countdown-card:nth-child(3) { background: #E8F5E9; }
     .countdown-card:nth-child(4) { background: #FFF3E0; }
-
     .countdown-card .value {
       font-family: 'Orbitron', sans-serif;
-      font-size: 2rem; color: #333;
-      line-height: 1;
+      font-size: 2rem; color: #333; line-height: 1;
     }
     .countdown-card .label {
-      margin-top: 0.25rem;
-      font-size: 0.75rem;
+      margin-top: 0.25rem; font-size: 0.75rem;
       text-transform: uppercase; color: #666;
     }
-
     @media (max-width: 600px) {
       .title { font-size: 2.2rem; }
       .hero h2 { font-size: 1.5rem; }
-      .cta-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-      }
-      .countdown-card {
-        min-width: 50px; padding: 0.75rem;
-      }
-      .countdown-card .value {
-        font-size: 1.5rem;
-      }
-      .countdown-teaser {
-        font-size: 1.2rem;
-      }
+      .cta-btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+      .countdown-card { min-width: 50px; padding: 0.75rem; }
+      .countdown-card .value { font-size: 1.5rem; }
+      .countdown-teaser { font-size: 1.2rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Vidéo de fond optimisée -->
+  <!-- Vidéo de fond -->
   <video autoplay muted loop playsinline id="bg-video">
     <source src="background.mp4" type="video/mp4">
   </video>
@@ -188,10 +153,45 @@
     </section>
   </main>
 
-  <!-- Script de compte à rebours et relance vidéo -->
   <script>
-    // Date cible : 22 août 2025 à 20h
-    const target = new Date('2025-08-22T20:00:00');
+    // Date cible : 22 août 2025 à 20h (mois indexé à 0)
+    const target = new Date(2025, 7, 22, 20, 0, 0);
 
     function updateCountdown() {
-      const now  = new Date
+      const now  = new Date();
+      const diff = target - now;
+
+      // Masquer teaser et countdown après la date
+      if (diff <= 0) {
+        document.querySelector('.countdown-teaser').style.display = 'none';
+        document.querySelector('.countdown').style.display        = 'none';
+        clearInterval(timer);
+        return;
+      }
+
+      const days    = Math.floor(diff / 1000 / 60 / 60 / 24);
+      const hours   = Math.floor((diff / 1000 / 60 / 60) % 24);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById('days').textContent    = days;
+      document.getElementById('hours').textContent   = String(hours).padStart(2,'0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2,'0');
+      document.getElementById('seconds').textContent = String(seconds).padStart(2,'0');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCountdown();
+      window.timer = setInterval(updateCountdown, 1000);
+
+      // Relance la vidéo de fond au retour sur la page
+      const bg = document.getElementById('bg-video');
+      window.addEventListener('pageshow', () => bg.play().catch(() => {}));
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) bg.play().catch(() => {});
+      });
+    });
+  </script>
+
+</body>
+</html>
