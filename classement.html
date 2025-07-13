@@ -2,96 +2,128 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Admin – Classement</title>
+  <title>Classement</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Orbitron&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin:0; padding:0; }
+    /* Reset & base */
+    * { box-sizing:border-box; margin:0; padding:0 }
     body {
-      font-family: 'Montserrat', sans-serif;
-      background: #FAF9F6; color: #333;
-      padding: 1rem;
+      font-family:'Montserrat',sans-serif;
+      background:#140F2D; color:#FFF;
+      display:flex;justify-content:center;align-items:center;
+      min-height:100vh; padding:1rem;
     }
-    header { text-align: center; margin-bottom: 1rem; }
-    header h1 {
-      font-family: 'Pacifico', cursive;
-      color: #6F42C1; font-size: 2rem;
+    .leaderboard {
+      width:100%; max-width:360px;
+      background:#1F1832; border-radius:24px;
+      overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.5);
     }
-    .actions { text-align: center; margin-bottom: 1rem; }
-    .actions button {
-      padding: .5rem 1rem;
-      background: #6F42C1; color: #fff;
-      border: none; border-radius: 4px;
-      cursor: pointer;
+    .leaderboard-header {
+      background:linear-gradient(90deg,#FF8AA1,#FFCF8D);
+      padding:1rem; text-align:center;
+      font-family:'Pacifico',cursive;
+      font-size:2rem; letter-spacing:2px;
+      text-transform:uppercase;
+      border-top-left-radius:24px;
+      border-top-right-radius:24px;
     }
-    table {
-      width: 100%; border-collapse: collapse;
-      margin-bottom: 1rem;
+    .leaderboard-list {
+      list-style:none; margin:0; padding:1rem;
+      display:flex; flex-direction:column; gap:.75rem;
     }
-    th, td {
-      padding: .5rem; border: 1px solid #ddd;
-      text-align: center;
+    .leaderboard-item {
+      display:flex; align-items:center; justify-content:space-between;
+      background:rgba(255,255,255,0.05);
+      padding:.75rem 1rem; border-radius:16px;
+      transition:background .2s;
     }
-    th { background: #fafafa; }
-    td input[type="text"],
-    td input[type="number"] {
-      width: 100%; border: 1px solid #ccc;
-      border-radius: 4px; padding: .25rem;
-      font-size: .9rem;
+    .leaderboard-item:hover {
+      background:rgba(255,255,255,0.1);
     }
-    td input[type="file"] {
-      font-size: .8rem;
+    .left {
+      display:flex; align-items:center; gap:.75rem;
+    }
+    .rank {
+      font-family:'Orbitron',sans-serif; font-size:1.1rem;
+      width:1.5rem; text-align:center;
     }
     .avatar {
-      width: 80px;  /* agrandi */
-      height: 80px; /* agrandi */
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
-      margin: 0 auto .5rem;
+      width:40px; height:40px; border-radius:50%;
+      object-fit:cover; border:2px solid #FFF;
     }
-    .btn-delete {
-      background: transparent; border: none;
-      color: #e63946; font-size: 1.2rem;
-      cursor: pointer;
+    .name {
+      flex:1; font-weight:600; font-size:1rem;
+      letter-spacing:.5px; text-transform:capitalize;
     }
-    .btn-add {
-      display: block; width: 100%;
-      padding: .75rem; font-size: 1rem;
-      text-align: center; background: #06d6a0;
-      color: #fff; border: none; border-radius: 4px;
-      cursor: pointer;
+    .score {
+      font-family:'Orbitron',sans-serif; font-size:1.1rem;
+      font-weight:600;
+    }
+    /* couleurs top3 */
+    .leaderboard-item.rank-1 { background:#FFD166; color:#140F2D }
+    .leaderboard-item.rank-2 { background:#06D6A0; color:#140F2D }
+    .leaderboard-item.rank-3 { background:#EF476F; color:#FFF }
+    /* suivants */
+    .leaderboard-item.rank-4 { background:#3A0CA3 }
+    .leaderboard-item.rank-5 { background:#7209B7 }
+    .leaderboard-item.rank-6 { background:#560BAD }
+    .leaderboard-item.rank-7 { background:#480CA8 }
+    .leaderboard-item.rank-8 { background:#4A47A3 }
+    .leaderboard-item.rank-9 { background:#4361EE }
+    .leaderboard-item.rank-10{ background:#4895EF }
+    @media(max-width:400px){
+      .leaderboard{max-width:100%}
+      .leaderboard-header{font-size:6vw}
+      .leaderboard-item{padding:.5rem}
+      .rank,.score{font-size:1rem}
     }
   </style>
 </head>
 <body>
 
-  <header><h1>Admin – Classement</h1></header>
-
-  <div class="actions">
-    <button type="button" onclick="location.href='index.html'">← Accueil</button>
+  <div class="leaderboard">
+    <div class="leaderboard-header">Classement</div>
+    <ul class="leaderboard-list" id="leaderboard"></ul>
   </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Avatar</th>
-        <th>Nom</th>
-        <th>Points</th>
-        <th>Suppr.</th>
-      </tr>
-    </thead>
-    <tbody id="admin-body"></tbody>
-  </table>
-
-  <button class="btn-add" id="add-player">+ Ajouter un joueur</button>
 
   <script>
     const STORAGE_KEY = 'players';
-    let players = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const container  = document.getElementById('leaderboard');
 
-    const tbody = document.getElementById('admin-body');
-    const addBtn = document.getElementById('add-player');
+    function render() {
+      const players = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+        .sort((a,b)=>b.score - a.score);
 
-    function save() {
-      localStorage.setItem(STORAGE_KE_
+      container.innerHTML = '';
+      players.forEach((p, idx) => {
+        const rank = idx + 1;
+        if (rank > 10) return;
+        const li = document.createElement('li');
+        li.className = `leaderboard-item rank-${rank}`;
+        li.innerHTML = `
+          <div class="left">
+            <div class="rank">${rank}</div>
+            ${p.avatar
+              ? `<img src="${p.avatar}" class="avatar" alt="${p.name}">`
+              : `<div class="avatar" style="background:rgba(255,255,255,0.2)"></div>`
+            }
+            <div class="name">${p.name}</div>
+          </div>
+          <div class="score">${p.score}</div>
+        `;
+        container.appendChild(li);
+      });
+    }
+
+    // Initial render
+    render();
+
+    // Auto-update on storage changes from admin page
+    window.addEventListener('storage', e => {
+      if (e.key === STORAGE_KEY) render();
+    });
+  </script>
+
+</body>
+</html>
