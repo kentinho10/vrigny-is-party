@@ -7,16 +7,15 @@
 
   <!-- Styles globaux -->
   <link rel="stylesheet" href="style.css">
-  <!-- Polices : Pacifico pour le titre, Orbitron pour le compteur -->
+  <!-- Polices : Pacifico pour le titre, Orbitron pour les chiffres -->
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Orbitron&display=swap" rel="stylesheet">
 
   <style>
-    /* Styles spécifiques à l’accueil + countdown */
     body {
-      background: #FAF9F6;
       margin: 0; padding: 0;
       font-family: sans-serif;
       color: #333;
+      background: #FAF9F6;
       text-align: center;
     }
     #bg-video {
@@ -29,48 +28,65 @@
     header {
       position: relative;
       padding: 2rem 1rem;
-      background: rgba(255,255,255,0.8);
-      backdrop-filter: blur(8px);
       z-index: 1;
     }
     .title {
       font-family: 'Pacifico', cursive;
       font-size: 3rem;
       color: #6F42C1;
-      margin: 0.2rem 0;
+      margin: 0;
+      text-shadow: 1px 2px 4px rgba(0,0,0,0.2);
     }
-    nav.main-nav a {
-      color: #555;
-      margin: 0 0.75rem;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 1rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      transition: background 0.2s;
-    }
-    nav.main-nav a:hover {
-      background: #E3DFFF;
-    }
-
     .hero {
-      min-height: 40vh;
+      min-height: 60vh;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       padding: 2rem 1rem;
     }
     .hero h2 {
-      font-size: 2rem; margin-bottom: 1rem;
+      font-size: 2rem;
+      margin-bottom: 1rem;
     }
-    .hero p {
-      font-size: 1rem; max-width: 600px; line-height: 1.5;
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 2rem;
     }
-
-    /* Compte à rebours */
+    .cta-btn {
+      position: relative;
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      color: #fff;
+      background: transparent;
+      text-decoration: none;
+      font-weight: 600;
+      border: 2px solid #6F42C1;
+      border-radius: 6px;
+      overflow: hidden;
+      animation: pulseBorder 2.5s ease-in-out infinite;
+    }
+    @keyframes pulseBorder {
+      0%,100% { border-color: #6F42C1; }
+      50%      { border-color: #E3DFFF; }
+    }
+    .cta-btn:hover {
+      background: rgba(111,66,193,0.1);
+    }
+    .countdown-teaser {
+      font-family: 'Pacifico', cursive;
+      font-size: 1.5rem;
+      color: #6F42C1;
+      margin-bottom: 1rem;
+    }
     .countdown {
       display: flex; flex-wrap: wrap;
       justify-content: center; align-items: center;
       padding: 1rem;
+      max-width: 600px;
+      margin: 0 auto 2rem;
     }
     .countdown-card {
       background: #fff;
@@ -97,10 +113,20 @@
     @media (max-width: 600px) {
       .title { font-size: 2.2rem; }
       .hero h2 { font-size: 1.5rem; }
-      .hero p { font-size: 0.9rem; }
-      .countdown-card { min-width: 50px; padding: 0.75rem; }
-      .countdown-card .value { font-size: 1.5rem; }
-      nav.main-nav a { font-size: 0.9rem; margin: 0 0.5rem; }
+      .cta-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+      .countdown-card {
+        min-width: 50px;
+        padding: 0.75rem;
+      }
+      .countdown-card .value {
+        font-size: 1.5rem;
+      }
+      .countdown-teaser {
+        font-size: 1.2rem;
+      }
     }
   </style>
 </head>
@@ -111,54 +137,53 @@
     <source src="background.mp4" type="video/mp4">
   </video>
 
-  <!-- Header -->
   <header>
     <h1 class="title">La Kaz à Fête !</h1>
-    <nav class="main-nav">
-      <a href="index.html">Accueil</a>
-      <a href="classement.html">Classement</a>
-      <!-- plus de lien programme ni admin ici -->
-    </nav>
   </header>
 
-  <!-- Hero -->
   <main>
     <section class="hero">
-      <h2>Le compte à rebours est lancé !</h2>
-      <p>Jusqu’au grand début du week-end : 22 août 2025 à 18 h</p>
-    </section>
+      <h2>Bienvenue au week-end le plus fun de l’été</h2>
 
-    <!-- Compte à rebours dynamique -->
-    <div class="countdown">
-      <div class="countdown-card">
-        <div class="value" id="days">0</div>
-        <div class="label">Jours</div>
+      <!-- CTA -->
+      <div class="cta-buttons">
+        <a href="programme.html" class="cta-btn">Programme</a>
+        <a href="classement.html" class="cta-btn">Classement</a>
       </div>
-      <div class="countdown-card">
-        <div class="value" id="hours">00</div>
-        <div class="label">Heures</div>
+
+      <!-- Teaser et Compte à rebours -->
+      <div class="countdown-teaser">Préparez-vous, ça va bientôt péter !</div>
+      <div class="countdown">
+        <div class="countdown-card">
+          <div class="value" id="days">0</div>
+          <div class="label">Jours</div>
+        </div>
+        <div class="countdown-card">
+          <div class="value" id="hours">00</div>
+          <div class="label">Heures</div>
+        </div>
+        <div class="countdown-card">
+          <div class="value" id="minutes">00</div>
+          <div class="label">Minutes</div>
+        </div>
+        <div class="countdown-card">
+          <div class="value" id="seconds">00</div>
+          <div class="label">Secondes</div>
+        </div>
       </div>
-      <div class="countdown-card">
-        <div class="value" id="minutes">00</div>
-        <div class="label">Minutes</div>
-      </div>
-      <div class="countdown-card">
-        <div class="value" id="seconds">00</div>
-        <div class="label">Secondes</div>
-      </div>
-    </div>
+    </section>
   </main>
 
   <script>
-    // Date cible : 22 août 2025, 18h
-    const target = new Date(2025, 7, 22, 18, 0, 0);
+    // Date cible : 22 août 2025 à 22h
+    const target = new Date(2025, 7, 22, 22, 0, 0);
 
     function updateCountdown() {
       const now = new Date();
       const diff = target - now;
       if (diff <= 0) {
-        document.querySelector('.countdown')
-          .innerHTML = '<h2>L’événement a commencé !</h2>';
+        document.querySelector('.countdown').innerHTML =
+          '<h2>L’événement a commencé !</h2>';
         clearInterval(timer);
         return;
       }
@@ -176,5 +201,6 @@
     updateCountdown();
     const timer = setInterval(updateCountdown, 1000);
   </script>
+
 </body>
 </html>
