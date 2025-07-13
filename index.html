@@ -3,24 +3,178 @@
 <head>
   <meta charset="UTF-8">
   <title>La Kaz à Fête !</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Styles globaux -->
   <link rel="stylesheet" href="style.css">
+  <!-- Polices : Pacifico pour le titre, Orbitron pour le compteur -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Orbitron&display=swap" rel="stylesheet">
+
+  <style>
+    /* Styles spécifiques à l’accueil + countdown */
+    body {
+      background: #FAF9F6;
+      margin: 0; padding: 0;
+      font-family: sans-serif;
+      color: #333;
+      text-align: center;
+    }
+    #bg-video {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.6;
+    }
+    header {
+      position: relative;
+      padding: 2rem 1rem;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(8px);
+      z-index: 1;
+    }
+    .title {
+      font-family: 'Pacifico', cursive;
+      font-size: 3rem;
+      color: #6F42C1;
+      margin: 0.2rem 0;
+    }
+    nav.main-nav a {
+      color: #555;
+      margin: 0 0.75rem;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    nav.main-nav a:hover {
+      background: #E3DFFF;
+    }
+
+    .hero {
+      min-height: 40vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .hero h2 {
+      font-size: 2rem; margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1rem; max-width: 600px; line-height: 1.5;
+    }
+
+    /* Compte à rebours */
+    .countdown {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; align-items: center;
+      padding: 1rem;
+    }
+    .countdown-card {
+      background: #fff;
+      margin: 0.5rem; padding: 1rem;
+      min-width: 70px; border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .countdown-card:nth-child(1) { background: #FFEBEE; }
+    .countdown-card:nth-child(2) { background: #E3F2FD; }
+    .countdown-card:nth-child(3) { background: #E8F5E9; }
+    .countdown-card:nth-child(4) { background: #FFF3E0; }
+
+    .countdown-card .value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem; color: #333;
+      line-height: 1;
+    }
+    .countdown-card .label {
+      margin-top: 0.25rem;
+      font-size: 0.75rem;
+      text-transform: uppercase; color: #666;
+    }
+
+    @media (max-width: 600px) {
+      .title { font-size: 2.2rem; }
+      .hero h2 { font-size: 1.5rem; }
+      .hero p { font-size: 0.9rem; }
+      .countdown-card { min-width: 50px; padding: 0.75rem; }
+      .countdown-card .value { font-size: 1.5rem; }
+      nav.main-nav a { font-size: 0.9rem; margin: 0 0.5rem; }
+    }
+  </style>
 </head>
 <body>
+
+  <!-- Vidéo de fond -->
   <video autoplay muted loop id="bg-video">
     <source src="background.mp4" type="video/mp4">
   </video>
 
+  <!-- Header -->
   <header>
     <h1 class="title">La Kaz à Fête !</h1>
-    <nav>
+    <nav class="main-nav">
       <a href="index.html">Accueil</a>
-      <a href="programme.html">Programme</a>
       <a href="classement.html">Classement</a>
-      <a href="admin-secret.html">Admin</a>
+      <!-- plus de lien programme ni admin ici -->
     </nav>
   </header>
 
-  <!-- Ton contenu d’accueil ici -->
+  <!-- Hero -->
+  <main>
+    <section class="hero">
+      <h2>Le compte à rebours est lancé !</h2>
+      <p>Jusqu’au grand début du week-end : 22 août 2025 à 18 h</p>
+    </section>
 
+    <!-- Compte à rebours dynamique -->
+    <div class="countdown">
+      <div class="countdown-card">
+        <div class="value" id="days">0</div>
+        <div class="label">Jours</div>
+      </div>
+      <div class="countdown-card">
+        <div class="value" id="hours">00</div>
+        <div class="label">Heures</div>
+      </div>
+      <div class="countdown-card">
+        <div class="value" id="minutes">00</div>
+        <div class="label">Minutes</div>
+      </div>
+      <div class="countdown-card">
+        <div class="value" id="seconds">00</div>
+        <div class="label">Secondes</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Date cible : 22 août 2025, 18h
+    const target = new Date(2025, 7, 22, 18, 0, 0);
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = target - now;
+      if (diff <= 0) {
+        document.querySelector('.countdown')
+          .innerHTML = '<h2>L’événement a commencé !</h2>';
+        clearInterval(timer);
+        return;
+      }
+      const days    = Math.floor(diff / 1000 / 60 / 60 / 24);
+      const hours   = Math.floor(diff / 1000 / 60 / 60 % 24);
+      const minutes = Math.floor(diff / 1000 / 60 % 60);
+      const seconds = Math.floor(diff / 1000 % 60);
+
+      document.getElementById('days').textContent    = days;
+      document.getElementById('hours').textContent   = String(hours).padStart(2,'0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2,'0');
+      document.getElementById('seconds').textContent = String(seconds).padStart(2,'0');
+    }
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+  </script>
 </body>
 </html>
