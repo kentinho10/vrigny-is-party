@@ -1,85 +1,127 @@
-<div id="gallery-container">
-  <h3>📸 Galerie du week-end (Easter Egg)</h3>
-  <div id="gallery"></div>
-  <div id="add-image-container">
-    <label for="addImage">Ajouter une image :</label>
-    <input type="file" id="addImage" accept="image/*">
-  </div>
-</div>
-
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Librairie de Photos - La Kaz à Fête !</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <style>
-  #gallery-container {
-    display: none;
-    padding: 2rem 1rem;
-    background: rgba(0,0,0,0.6);
-    border-radius: 12px;
-    max-width: 1000px;
-    margin: 2rem auto;
-    color: #fff;
+  body { margin:0; font-family: 'Pacifico', cursive; background:#FAF9F6; color:#333; text-align:center; padding:1rem; }
+  h1 { margin-bottom:1rem; font-size:2rem; color:#FFB347; cursor:pointer; }
+  .upload-section { margin-bottom:1rem; }
+  input[type="file"] { margin:0.5rem 0; }
+  button {
+    padding:0.5rem 1rem; border:none; background:#6F42C1; color:#fff; border-radius:5px; cursor:pointer;
+    font-weight:600; transition: transform 0.2s;
   }
-
-  #gallery {
+  button:hover { transform: scale(1.05); }
+  .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;
-    margin-top: 1rem;
+    grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+    gap:12px;
+    margin-top:1rem;
   }
-
-  #gallery img {
-    width: 100%;
-    height: auto; /* pour garder les proportions */
-    object-fit: cover;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: transform 0.2s;
+  .gallery-item {
+    position: relative;
+    border-radius:8px;
+    overflow: hidden;
+    background:#fff;
+    padding:4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
-
-  #gallery img:hover {
-    transform: scale(1.05);
+  .gallery-item img {
+    width:100%; height:200px;
+    object-fit:cover;
+    border-radius:6px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor:pointer;
   }
-
-  .download-btn {
-    display: block;
-    margin-top: 5px;
-    background: #FFD700;
-    color: #000;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    text-align: center;
+  .gallery-item img:hover { transform: scale(1.05); box-shadow: 0 0 15px #FFD700; }
+  .btn-container {
+    margin-top:4px;
+    display:flex;
+    justify-content:space-between;
+    gap:4px;
+  }
+  .download-btn, .delete-btn {
+    flex:1;
+    padding:0.3rem 0.5rem;
+    font-size:0.85rem;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .download-btn { background:#FFD700; color:#111; text-decoration:none; }
+  .delete-btn { background:#E74C3C; color:#fff; }
+  .back-btn {
+    display:block; margin:1rem auto; padding:0.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:5px; width:120px; text-align:center;
   }
 </style>
+</head>
+<body>
+
+<h1>Librairie de Photos 🌴</h1>
+<a href="index.html" class="back-btn">← Accueil</a>
+
+<div class="upload-section">
+  <input type="file" id="photoInput" accept="image/*" multiple>
+  <button id="uploadBtn">Ajouter</button>
+</div>
+
+<div class="gallery" id="gallery"></div>
 
 <script>
-  const gallery = document.getElementById('gallery');
-  const addImage = document.getElementById('addImage');
+const input = document.getElementById('photoInput');
+const btn = document.getElementById('uploadBtn');
+const gallery = document.getElementById('gallery');
 
-  addImage.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if(file) {
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        const container = document.createElement('div');
+let photos = JSON.parse(localStorage.getItem('photos') || '[]');
 
-        const img = document.createElement('img');
-        img.src = ev.target.result;
-        img.alt = 'Photo du week-end';
-        img.addEventListener('click', () => container.remove());
-
-        // Création d’un bouton de téléchargement
-        const downloadLink = document.createElement('a');
-        downloadLink.href = ev.target.result;
-        downloadLink.download = file.name;
-        downloadLink.textContent = '⬇️ Télécharger';
-        downloadLink.className = 'download-btn';
-
-        container.appendChild(img);
-        container.appendChild(downloadLink);
-        gallery.appendChild(container);
-      }
-      reader.readAsDataURL(file);
-    }
+function displayPhotos() {
+  gallery.innerHTML = '';
+  photos.forEach((src, i) => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.innerHTML = `
+      <img src="${src}" alt="Photo #${i+1}">
+      <div class="btn-container">
+        <a href="${src}" download="photo${i+1}.jpg" class="download-btn">Télécharger</a>
+        <button class="delete-btn" onclick="deletePhoto(${i})">Supprimer</button>
+      </div>
+    `;
+    gallery.appendChild(item);
   });
+}
+
+// Ajouter de nouvelles photos
+btn.addEventListener('click', () => {
+  const files = input.files;
+  if(!files.length) return alert("Sélectionne au moins une photo !");
+  
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      photos.push(e.target.result);
+      localStorage.setItem('photos', JSON.stringify(photos));
+      displayPhotos();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+});
+
+// Supprimer une photo
+function deletePhoto(index) {
+  if(confirm("Supprimer cette photo ?")) {
+    photos.splice(index,1);
+    localStorage.setItem('photos', JSON.stringify(photos));
+    displayPhotos();
+  }
+}
+
+displayPhotos();
 </script>
+
+</body>
+</html>
