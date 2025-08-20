@@ -6,14 +6,14 @@
   <link rel="stylesheet" href="style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Polices Google différentes pour chaque jour -->
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Orbitron&family=Fredoka+One&family=Roboto+Slab&display=swap" rel="stylesheet">
+  <!-- Police Google Orbitron pour tous les jours -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
 
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: sans-serif;
+      font-family: 'Orbitron', sans-serif;
       min-height: 100vh;
       background: linear-gradient(to bottom, #fef9c3, #ffecd2);
     }
@@ -36,7 +36,6 @@
       text-align: center;
       margin: 2rem 0;
       text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
-      font-family: 'Fredoka One', cursive;
       font-size: 3rem;
     }
 
@@ -55,6 +54,7 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.3);
       overflow: hidden;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Orbitron', sans-serif; /* police uniforme */
     }
     .flip-card:hover {
       transform: translateY(-5px);
@@ -88,22 +88,19 @@
       color: #ffffff; /* activités en blanc */
     }
 
-    /* Univers par jour */
+    /* Univers par jour avec images de fond */
     .flip-card.vendredi {
-      background: url('https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=60') no-repeat center/cover; /* nouvelle image */
-      font-family: 'Pacifico', cursive;
+      background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60') no-repeat center/cover; /* tropiques */
       text-shadow: 1px 2px 6px rgba(0,0,0,0.7);
     }
 
     .flip-card.samedi {
       background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60') no-repeat center/cover;
-      font-family: 'Orbitron', sans-serif;
       text-shadow: 1px 2px 6px rgba(0,0,0,0.7);
     }
 
     .flip-card.dimanche {
       background: url('https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=800&q=60') no-repeat center/cover;
-      font-family: 'Roboto Slab', serif;
       text-shadow: 1px 2px 6px rgba(0,0,0,0.7);
     }
 
