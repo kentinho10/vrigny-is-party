@@ -4,7 +4,7 @@ body {
   padding: 0;
   font-family: 'Arial', sans-serif;
   overflow-x: hidden;
-  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+  background: linear-gradient(135deg, #ff9a9e 0%, #fcb69f 100%); /* dégradé tropical */
   color: #3a0842;
 }
 
@@ -92,21 +92,26 @@ h3 {
 }
 
 /* --- Section programme classique --- */
+.programme {
+  padding: 1rem 2rem;
+}
+
 .programme ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 .programme li {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   margin: 0.4rem 0;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
   transition: transform 0.2s, background 0.2s;
+  font-weight: 500;
 }
 .programme li:hover {
   transform: scale(1.03);
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 /* --- Tableaux / Admin --- */
@@ -127,9 +132,28 @@ button {
   cursor: pointer;
 }
 
-/* --- Responsive --- */
-@media screen and (max-width: 600px) {
+/* --- Responsive / Mobile : Jour vertical --- */
+@media screen and (max-width: 768px) {
   .flip-clock {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* chaque jour en colonne unique */
   }
+
+  .programme h3 {
+    font-size: 1.6rem;
+  }
+
+  .programme li {
+    font-size: 0.95rem;
+  }
+}
+
+/* --- Effets tropiques supplémentaires --- */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1950&q=80') no-repeat center/cover;
+  opacity: 0.15;
+  z-index: -1;
 }
