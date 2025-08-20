@@ -15,7 +15,7 @@
       padding: 0;
       font-family: sans-serif;
       color: #fff;
-      background: linear-gradient(to bottom, #fef9c3, #ffecd2); /* un dégradé léger général */
+      background: linear-gradient(to bottom, #fef9c3, #ffecd2);
       min-height: 100vh;
     }
 
@@ -37,6 +37,7 @@
       margin: 2rem 0;
       text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
       font-family: 'Fredoka One', cursive;
+      font-size: 3rem;
     }
 
     .flip-clock {
@@ -47,25 +48,42 @@
     }
 
     .flip-card {
+      position: relative;
       border-radius: 15px;
-      padding: 1.5rem;
+      padding: 2rem 1.5rem;
       text-align: center;
       box-shadow: 0 8px 20px rgba(0,0,0,0.3);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      color: #fff;
+      overflow: hidden;
     }
     .flip-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 12px 25px rgba(0,0,0,0.5);
     }
 
-    .flip-card .label {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
+    .flip-card::before {
+      content: "";
+      position: absolute;
+      top:0;
+      left:0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5); /* overlay sombre pour lisibilité */
+      z-index: 0;
     }
+
+    .flip-card .label {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      z-index: 1;
+      position: relative;
+    }
+
     .flip-card .value p {
-      margin: 0.5rem 0;
-      font-size: 1rem;
+      margin: 0.8rem 0;
+      font-size: 1.3rem;
+      z-index: 1;
+      position: relative;
     }
 
     /* Univers par jour */
@@ -89,7 +107,7 @@
 
     @media(max-width: 600px){
       .flip-clock {
-        grid-template-columns: 1fr; /* les cartes s'empilent sur mobile */
+        grid-template-columns: 1fr; /* empilement sur mobile */
       }
     }
   </style>
