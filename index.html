@@ -42,6 +42,7 @@
       background-clip: text;
       color: transparent;
       text-shadow: 1px 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
     }
     .hero {
       margin-top: 0;
@@ -59,18 +60,12 @@
     }
     .cta-btn {
       padding: 0.75rem 1.5rem; font-size: 1rem;
-      color: #fff; background: transparent;
+      color: #fff; background: #000;
       text-decoration: none; font-weight: 600;
-      border: 2px solid #6F42C1; border-radius: 6px;
-      animation: pulseBorder 2.5s ease-in-out infinite;
+      border-radius: 6px;
+      transition: background 0.3s;
     }
-    @keyframes pulseBorder {
-      0%,100% { border-color: #6F42C1; }
-      50%      { border-color: #E3DFFF; }
-    }
-    .cta-btn:hover {
-      background: rgba(111,66,193,0.1);
-    }
+    .cta-btn:hover { background: #333; }
     .countdown-teaser {
       font-family: 'Pacifico', cursive;
       font-size: 1.5rem; color: #6F42C1;
@@ -189,6 +184,22 @@
       window.addEventListener('pageshow', () => bg.play().catch(() => {}));
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) bg.play().catch(() => {});
+      });
+
+      // Easter egg : triple clic sur le titre ouvre la librairie de photos
+      const title = document.querySelector('.title');
+      let clickCount = 0;
+      let timerClick;
+      title.addEventListener('click', () => {
+        clickCount++;
+        if(clickCount === 3) {
+          window.location.href = "galerie.html";
+          clickCount = 0;
+          clearTimeout(timerClick);
+        } else {
+          clearTimeout(timerClick);
+          timerClick = setTimeout(() => clickCount = 0, 1000);
+        }
       });
     });
   </script>
