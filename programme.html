@@ -5,6 +5,94 @@
   <title>Programme</title>
   <link rel="stylesheet" href="style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Polices Google différentes pour chaque jour -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Orbitron&family=Fredoka+One&family=Roboto+Slab&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      color: #fff;
+      background: linear-gradient(to bottom, #fef9c3, #ffecd2); /* un dégradé léger général */
+      min-height: 100vh;
+    }
+
+    .back-btn {
+      margin: 1rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.8);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .back-btn:hover {
+      background: rgba(255,255,255,1);
+    }
+
+    header h1 {
+      text-align: center;
+      margin: 2rem 0;
+      text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+      font-family: 'Fredoka One', cursive;
+    }
+
+    .flip-clock {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .flip-card {
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      color: #fff;
+    }
+    .flip-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+    }
+
+    .flip-card .label {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .flip-card .value p {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+    }
+
+    /* Univers par jour */
+    .flip-card.vendredi {
+      background: url('https://images.unsplash.com/photo-1501973801540-537f08ccae7e?auto=format&fit=crop&w=800&q=60') no-repeat center/cover;
+      font-family: 'Pacifico', cursive;
+      text-shadow: 1px 2px 6px rgba(0,0,0,0.7);
+    }
+
+    .flip-card.samedi {
+      background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60') no-repeat center/cover;
+      font-family: 'Orbitron', sans-serif;
+      text-shadow: 1px 2px 6px rgba(0,0,0,0.7);
+    }
+
+    .flip-card.dimanche {
+      background: url('https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=800&q=60') no-repeat center/cover;
+      font-family: 'Roboto Slab', serif;
+      text-shadow: 1px 2px 6px rgba(0,0,0,0.7);
+    }
+
+    @media(max-width: 600px){
+      .flip-clock {
+        grid-template-columns: 1fr; /* les cartes s'empilent sur mobile */
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -15,10 +103,9 @@
   </header>
 
   <section class="programme">
-
     <div class="flip-clock">
 
-      <div class="flip-card">
+      <div class="flip-card vendredi">
         <div class="label">Vendredi</div>
         <div class="value">
           <p>18h-20h : Arrivée des invités</p>
@@ -27,7 +114,7 @@
         </div>
       </div>
 
-      <div class="flip-card">
+      <div class="flip-card samedi">
         <div class="label">Samedi</div>
         <div class="value">
           <p>10h-12h : Réveil sous les cocotiers</p>
@@ -39,7 +126,7 @@
         </div>
       </div>
 
-      <div class="flip-card">
+      <div class="flip-card dimanche">
         <div class="label">Dimanche</div>
         <div class="value">
           <p>10h-12h : Réveil la tête à l’envers</p>
@@ -49,7 +136,6 @@
       </div>
 
     </div>
-
   </section>
 
 </body>
