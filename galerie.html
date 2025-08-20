@@ -71,56 +71,94 @@
 
 <div class="gallery" id="gallery"></div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
 <script>
+// Configuration Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBq5OSHZzq6mixYfDrlfJHg397VjO_Plyc",
+  authDomain: "kazafete-627b7.firebaseapp.com",
+  databaseURL: "https://kazafete-627b7-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kazafete-627b7",
+  storageBucket: "kazafete-627b7.appspot.com",
+  messagingSenderId: "1009736388412",
+  appId: "1:1009736388412:web:62f833aa444f0d30909839"
+};
+
+// Initialisation Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const storage = firebase.storage();
+
 const input = document.getElementById('photoInput');
 const btn = document.getElementById('uploadBtn');
 const gallery = document.getElementById('gallery');
 
-let photos = JSON.parse(localStorage.getItem('photos') || '[]');
-
+// Afficher les photos depuis Firebase
 function displayPhotos() {
   gallery.innerHTML = '';
-  photos.forEach((src, i) => {
-    const item = document.createElement('div');
-    item.className = 'gallery-item';
-    item.innerHTML = `
-      <img src="${src}" alt="Photo #${i+1}">
-      <div class="btn-container">
-        <a href="${src}" download="photo${i+1}.jpg" class="download-btn">Télécharger</a>
-        <button class="delete-btn" onclick="deletePhoto(${i})">Supprimer</button>
-      </div>
-    `;
-    gallery.appendChild(item);
+  db.ref('photos').once('value', snapshot => {
+    const photos = snapshot.val() || [];
+    photos.forEach((photo, i) => {
+      const item = document.createElement('div');
+      item.className = 'gallery-item';
+      item.innerHTML = `
+        <img src="${photo}" alt="Photo #${i+1}">
+        <div class="btn-container">
+          <a href="${photo}" download="photo${i+1}.jpg" class="download-btn">Télécharger</a>
+          <button class="delete-btn" onclick="deletePhoto(${i})">Supprimer</button>
+        </div>
+      `;
+      gallery.appendChild(item);
+    });
   });
 }
 
-// Ajouter de nouvelles photos
+// Ajouter des photos
 btn.addEventListener('click', () => {
   const files = input.files;
   if(!files.length) return alert("Sélectionne au moins une photo !");
-  
+
   Array.from(files).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      photos.push(e.target.result);
-      localStorage.setItem('photos', JSON.stringify(photos));
-      displayPhotos();
-    };
-    reader.readAsDataURL(file);
+    const storageRef = storage.ref('photos/' + Date.now() + '_' + file.name);
+    storageRef.put(file).then(snapshot => {
+      snapshot.ref.getDownloadURL().then(url => {
+        db.ref('photos').once('value', snap => {
+          const photos = snap.val() || [];
+          photos.push(url);
+          db.ref('photos').set(photos);
+          displayPhotos();
+        });
+      });
+    });
   });
   input.value = '';
 });
 
 // Supprimer une photo
 function deletePhoto(index) {
-  if(confirm("Supprimer cette photo ?")) {
-    photos.splice(index,1);
-    localStorage.setItem('photos', JSON.stringify(photos));
-    displayPhotos();
-  }
+  if(!confirm("Supprimer cette photo ?")) return;
+
+  db.ref('photos').once('value', snapshot => {
+    const photos = snapshot.val() || [];
+    const url = photos[index];
+    if(!url) return;
+
+    // Supprimer du Storage
+    storage.refFromURL(url).delete().then(() => {
+      photos.splice(index,1);
+      db.ref('photos').set(photos);
+      displayPhotos();
+    }).catch(err => console.error(err));
+  });
 }
 
-displayPhotos();
+// Rafraîchir à chaque changement
+db.ref('photos').on('value', displayPhotos);
+
 </script>
 
 </body>
