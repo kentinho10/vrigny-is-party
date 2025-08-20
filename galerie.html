@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <style>
   body { margin:0; font-family: 'Pacifico', cursive; background:#FAF9F6; color:#333; text-align:center; padding:1rem; }
-  h1 { margin-bottom:1rem; font-size:2rem; color:#FFB347; cursor:pointer; }
+  h1 { margin-bottom:1rem; font-size:2rem; color:#FFB347; }
   .upload-section { margin-bottom:1rem; }
   input[type="file"] { margin:0.5rem 0; }
   button {
@@ -15,6 +15,7 @@
     font-weight:600; transition: transform 0.2s;
   }
   button:hover { transform: scale(1.05); }
+  .hint { font-size:.9rem; color:#666; margin-top:.5rem; }
   .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
@@ -51,8 +52,10 @@
     border-radius:5px;
     cursor:pointer;
     font-weight:600;
+    text-decoration:none;
+    text-align:center;
   }
-  .download-btn { background:#FFD700; color:#111; text-decoration:none; text-align:center; }
+  .download-btn { background:#FFD700; color:#111; }
   .delete-btn { background:#E74C3C; color:#fff; }
   .back-btn {
     display:block; margin:1rem auto; padding:0.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:5px; width:120px; text-align:center;
@@ -67,17 +70,17 @@
 <div class="upload-section">
   <input type="file" id="photoInput" accept="image/*" multiple>
   <button id="uploadBtn">Ajouter</button>
+  <div class="hint">Les photos sont compressées avant envoi (max ~1280px) et stockées dans la Realtime Database.</div>
 </div>
 
 <div class="gallery" id="gallery"></div>
 
-<!-- Firebase SDK -->
+<!-- Firebase SDK (Compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.16.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.16.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.16.0/firebase-storage-compat.js"></script>
 
 <script>
-  // ⚡ Mets ta config ici
+  // ✅ Config Realtime Database (sans Storage)
   const firebaseConfig = {
     apiKey: "AIzaSyBq5OSHZzq6mixYfDrlfJHg397VjO_Plyc",
     authDomain: "kazafete-627b7.firebaseapp.com",
@@ -87,54 +90,90 @@
     messagingSenderId: "1009736388412",
     appId: "1:1009736388412:web:62f833aa444f0d30909839"
   };
-
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-  const storage = firebase.storage();
 
   const input = document.getElementById('photoInput');
   const btn = document.getElementById('uploadBtn');
   const gallery = document.getElementById('gallery');
 
-  // Afficher les photos en temps réel
-  db.ref("photos").on("value", snapshot => {
-    gallery.innerHTML = "";
-    snapshot.forEach(child => {
-      const data = child.val();
-      const key = child.key;
-      const item = document.createElement("div");
-      item.className = "gallery-item";
-      item.innerHTML = `
-        <img src="${data.url}" alt="Photo">
-        <div class="btn-container">
-          <a href="${data.url}" download class="download-btn">Télécharger</a>
-          <button class="delete-btn" onclick="deletePhoto('${key}')">Supprimer</button>
-        </div>
-      `;
-      gallery.appendChild(item);
+  // --- Compression client (canvas) ---
+  function compressImage(file, maxW = 1280, maxH = 1280, quality = 0.8) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = e => { img.src = e.target.result; };
+      reader.onerror = reject;
+      img.onload = () => {
+        let { width, height } = img;
+        // Redimension
+        const ratio = Math.min(maxW / width, maxH / height, 1);
+        const w = Math.round(width * ratio);
+        const h = Math.round(height * ratio);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        // JPEG (change en "image/png" si besoin)
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.onerror = reject;
+      reader.readAsDataURL(file);
     });
-  });
-
-  // Ajouter une photo
-  btn.addEventListener("click", () => {
-    const files = input.files;
-    if (!files.length) return alert("Sélectionne au moins une photo !");
-    
-    Array.from(files).forEach(file => {
-      const storageRef = storage.ref("photos/" + Date.now() + "-" + file.name);
-      storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL()).then(url => {
-        db.ref("photos").push({ url });
-      });
-    });
-    input.value = "";
-  });
-
-  // Supprimer une photo
-  function deletePhoto(key) {
-    if (confirm("Supprimer cette photo ?")) {
-      db.ref("photos/" + key).remove();
-    }
   }
+
+  // --- Rendu d'une vignette ---
+  function renderItem(key, url, name) {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.dataset.key = key;
+    item.innerHTML = `
+      <img src="${url}" alt="${name || 'Photo'}">
+      <div class="btn-container">
+        <a class="download-btn" href="${url}" download="${(name || 'photo')}.jpg">Télécharger</a>
+        <button class="delete-btn">Supprimer</button>
+      </div>
+    `;
+    item.querySelector('.delete-btn').addEventListener('click', async () => {
+      if (!confirm('Supprimer cette photo pour tout le monde ?')) return;
+      await db.ref('photos/' + key).remove();
+    });
+    return item;
+  }
+
+  // --- Écoute temps réel ---
+  db.ref('photos').orderByChild('createdAt').on('value', snap => {
+    gallery.innerHTML = '';
+    const val = snap.val();
+    if (!val) return;
+    const entries = Object.entries(val).sort((a,b) => (b[1].createdAt||0) - (a[1].createdAt||0));
+    for (const [key, data] of entries) {
+      gallery.appendChild(renderItem(key, data.dataUrl || data.url, data.name));
+    }
+  });
+
+  // --- Upload vers RTDB uniquement ---
+  btn.addEventListener('click', async () => {
+    const files = Array.from(input.files);
+    if (!files.length) return alert("Sélectionne au moins une photo !");
+    for (const file of files) {
+      try {
+        const dataUrl = await compressImage(file, 1280, 1280, 0.8);
+        await db.ref('photos').push({
+          dataUrl,                      // <- l’image encodée base64
+          name: file.name || 'photo',
+          createdAt: Date.now()
+        });
+      } catch (e) {
+        console.error('Erreur upload:', e);
+        alert("Impossible d'ajouter la photo.");
+      }
+    }
+    input.value = '';
+  });
+
+  console.log('RTDB only: prêt ✅');
 </script>
 
 </body>
