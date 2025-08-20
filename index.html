@@ -14,11 +14,10 @@
     body {
       margin: 0; padding: 0;
       font-family: sans-serif;
-      color: #fff;
+      color: #333;
       background: #FAF9F6;
       text-align: center;
     }
-
     /* Vidéo de fond */
     #bg-video {
       pointer-events: none;
@@ -27,13 +26,11 @@
       object-fit: cover; z-index: -1;
       opacity: 0.6;
     }
-
     header {
       position: relative;
       padding: 2rem 1rem 0.5rem;
       z-index: 1;
     }
-
     .title {
       font-family: 'Pacifico', cursive;
       font-size: 3rem; margin: 0;
@@ -44,66 +41,59 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-shadow: 1px 2px 4px rgba(0,0,0,0.2);
+      text-shadow: 1px 2px 4px rgba(0,0,0,0.1);
       cursor: pointer;
     }
-
     .hero {
       margin-top: 0;
       display: flex; flex-direction: column;
       align-items: center; justify-content: flex-start;
       padding: 1.5rem 1rem 2rem;
     }
-
     .hero h2 {
       font-size: 2rem; margin: 0.5rem 0 1rem;
     }
-
     .cta-buttons {
       display: flex; gap: 1rem;
       flex-wrap: wrap; justify-content: center;
       margin-bottom: 1.5rem;
     }
-
     .cta-btn {
       padding: 0.75rem 1.5rem; font-size: 1rem;
-      color: #fff; background: black;
+      color: #fff; background: #000;
       text-decoration: none; font-weight: 600;
       border-radius: 6px;
       transition: background 0.3s;
     }
-    .cta-btn:hover {
-      background: #333;
-    }
-
+    .cta-btn:hover { background: #333; }
     .countdown-teaser {
       font-family: 'Pacifico', cursive;
-      font-size: 1.5rem; color: #FFD700;
+      font-size: 1.5rem; color: #6F42C1;
       margin-bottom: 1rem;
     }
-
     .countdown {
       display: flex; flex-wrap: wrap;
       justify-content: center; align-items: center;
       padding: 0 1rem 2rem; max-width: 600px;
       margin: 0 auto;
     }
-
     .countdown-card {
-      background: rgba(0,0,0,0.5); margin: 0.5rem; padding: 1rem;
+      background: #fff; margin: 0.5rem; padding: 1rem;
       min-width: 70px; border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-
+    .countdown-card:nth-child(1) { background: #FFEBEE; }
+    .countdown-card:nth-child(2) { background: #E3F2FD; }
+    .countdown-card:nth-child(3) { background: #E8F5E9; }
+    .countdown-card:nth-child(4) { background: #FFF3E0; }
     .countdown-card .value {
       font-family: 'Orbitron', sans-serif;
-      font-size: 2rem; color: #fff; line-height: 1;
+      font-size: 2rem; color: #333; line-height: 1;
     }
-
     .countdown-card .label {
       margin-top: 0.25rem; font-size: 0.75rem;
-      text-transform: uppercase; color: #FFD700;
+      text-transform: uppercase; color: #666;
     }
-
     @media (max-width: 600px) {
       .title { font-size: 2.2rem; }
       .hero h2 { font-size: 1.5rem; }
@@ -111,41 +101,6 @@
       .countdown-card { min-width: 50px; padding: 0.75rem; }
       .countdown-card .value { font-size: 1.5rem; }
       .countdown-teaser { font-size: 1.2rem; }
-    }
-
-    /* Easter Egg - Galerie */
-    #gallery-container {
-      display: none;
-      padding: 2rem 1rem;
-      background: rgba(0,0,0,0.6);
-      border-radius: 12px;
-      max-width: 900px;
-      margin: 2rem auto;
-      color: #fff;
-    }
-
-    #gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 10px;
-      margin-top: 1rem;
-    }
-
-    #gallery img {
-      width: 100%;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    #gallery img:hover {
-      transform: scale(1.1);
-    }
-
-    #add-image-container {
-      margin-top: 1rem;
     }
   </style>
 </head>
@@ -191,29 +146,20 @@
         </div>
       </div>
     </section>
-
-    <!-- Easter Egg - Galerie -->
-    <div id="gallery-container">
-      <h3>📸 Galerie du week-end (Easter Egg)</h3>
-      <div id="gallery"></div>
-      <div id="add-image-container">
-        <label for="addImage">Ajouter une image :</label>
-        <input type="file" id="addImage" accept="image/*">
-      </div>
-    </div>
-
   </main>
 
   <script>
-    // Countdown
+    // Date cible : 22 août 2025 à 20h (mois indexé à 0)
     const target = new Date(2025, 7, 22, 20, 0, 0);
+
     function updateCountdown() {
       const now  = new Date();
       const diff = target - now;
 
-      if(diff <= 0) {
+      // Masquer teaser et countdown après la date
+      if (diff <= 0) {
         document.querySelector('.countdown-teaser').style.display = 'none';
-        document.querySelector('.countdown').style.display = 'none';
+        document.querySelector('.countdown').style.display        = 'none';
         clearInterval(timer);
         return;
       }
@@ -223,8 +169,8 @@
       const minutes = Math.floor((diff / 1000 / 60) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
 
-      document.getElementById('days').textContent = days;
-      document.getElementById('hours').textContent = String(hours).padStart(2,'0');
+      document.getElementById('days').textContent    = days;
+      document.getElementById('hours').textContent   = String(hours).padStart(2,'0');
       document.getElementById('minutes').textContent = String(minutes).padStart(2,'0');
       document.getElementById('seconds').textContent = String(seconds).padStart(2,'0');
     }
@@ -233,15 +179,30 @@
       updateCountdown();
       window.timer = setInterval(updateCountdown, 1000);
 
-      // Video auto play
+      // Relance la vidéo de fond au retour sur la page
       const bg = document.getElementById('bg-video');
       window.addEventListener('pageshow', () => bg.play().catch(() => {}));
-      document.addEventListener('visibilitychange', () => { if(!document.hidden) bg.play().catch(() => {}); });
-
-      // Easter Egg trigger (double-clic sur le titre)
-      document.querySelector('.title').addEventListener('dblclick', () => {
-        const galleryContainer = document.getElementById('gallery-container');
-        galleryContainer.style.display = galleryContainer.style.display === 'none' ? 'block' : 'none';
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) bg.play().catch(() => {});
       });
 
-      // Galerie logic
+      // Easter egg : triple clic sur le titre ouvre la librairie de photos
+      const title = document.querySelector('.title');
+      let clickCount = 0;
+      let timerClick;
+      title.addEventListener('click', () => {
+        clickCount++;
+        if(clickCount === 3) {
+          window.location.href = "galerie.html";
+          clickCount = 0;
+          clearTimeout(timerClick);
+        } else {
+          clearTimeout(timerClick);
+          timerClick = setTimeout(() => clickCount = 0, 1000);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
