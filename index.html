@@ -14,7 +14,7 @@
     body {
       margin: 0; padding: 0;
       font-family: sans-serif;
-      color: #333;
+      color: #fff;
       background: #FAF9F6;
       text-align: center;
     }
@@ -44,7 +44,8 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-shadow: 1px 2px 4px rgba(0,0,0,0.1);
+      text-shadow: 1px 2px 4px rgba(0,0,0,0.2);
+      cursor: pointer;
     }
 
     .hero {
@@ -58,7 +59,6 @@
       font-size: 2rem; margin: 0.5rem 0 1rem;
     }
 
-    /* Boutons CTA restaurés */
     .cta-buttons {
       display: flex; gap: 1rem;
       flex-wrap: wrap; justify-content: center;
@@ -66,31 +66,19 @@
     }
 
     .cta-btn {
-      padding: 0.75rem 1.5rem; 
-      font-size: 1rem;
-      color: #fff; 
-      background: transparent;
-      text-decoration: none; 
-      font-weight: 600;
-      border: 2px solid #6F42C1; 
+      padding: 0.75rem 1.5rem; font-size: 1rem;
+      color: #fff; background: black;
+      text-decoration: none; font-weight: 600;
       border-radius: 6px;
-      animation: pulseBorder 2.5s ease-in-out infinite;
-      transition: background 0.3s, color 0.3s;
+      transition: background 0.3s;
     }
-
     .cta-btn:hover {
-      background: rgba(111,66,193,0.1);
-      color: #fff;
-    }
-
-    @keyframes pulseBorder {
-      0%,100% { border-color: #6F42C1; }
-      50%      { border-color: #E3DFFF; }
+      background: #333;
     }
 
     .countdown-teaser {
       font-family: 'Pacifico', cursive;
-      font-size: 1.5rem; color: #6F42C1;
+      font-size: 1.5rem; color: #FFD700;
       margin-bottom: 1rem;
     }
 
@@ -102,24 +90,18 @@
     }
 
     .countdown-card {
-      background: #fff; margin: 0.5rem; padding: 1rem;
+      background: rgba(0,0,0,0.5); margin: 0.5rem; padding: 1rem;
       min-width: 70px; border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-
-    .countdown-card:nth-child(1) { background: #FFEBEE; }
-    .countdown-card:nth-child(2) { background: #E3F2FD; }
-    .countdown-card:nth-child(3) { background: #E8F5E9; }
-    .countdown-card:nth-child(4) { background: #FFF3E0; }
 
     .countdown-card .value {
       font-family: 'Orbitron', sans-serif;
-      font-size: 2rem; color: #333; line-height: 1;
+      font-size: 2rem; color: #fff; line-height: 1;
     }
 
     .countdown-card .label {
       margin-top: 0.25rem; font-size: 0.75rem;
-      text-transform: uppercase; color: #666;
+      text-transform: uppercase; color: #FFD700;
     }
 
     @media (max-width: 600px) {
@@ -131,49 +113,39 @@
       .countdown-teaser { font-size: 1.2rem; }
     }
 
-    /* Galerie easter egg */
+    /* Easter Egg - Galerie */
     #gallery-container {
-      margin-top: 2rem;
-      padding: 1rem;
+      display: none;
+      padding: 2rem 1rem;
+      background: rgba(0,0,0,0.6);
+      border-radius: 12px;
+      max-width: 900px;
+      margin: 2rem auto;
+      color: #fff;
     }
 
     #gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       gap: 10px;
+      margin-top: 1rem;
     }
 
     #gallery img {
       width: 100%;
-      height: 120px;
+      height: 100px;
       object-fit: cover;
       border-radius: 8px;
-      transition: transform 0.3s;
+      cursor: pointer;
+      transition: transform 0.2s;
     }
 
     #gallery img:hover {
-      transform: scale(1.05);
+      transform: scale(1.1);
     }
 
     #add-image-container {
-      margin: 1rem 0;
-    }
-
-    #add-image-container input[type="file"] {
-      display: block;
-      margin: 0.5rem auto;
-    }
-
-    .remove-btn {
-      display: block;
-      margin-top: 0.25rem;
-      background: #FF4444;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      padding: 0.25rem 0.5rem;
-      cursor: pointer;
-      font-size: 0.75rem;
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -218,31 +190,30 @@
           <div class="label">Secondes</div>
         </div>
       </div>
-
-      <!-- Galerie easter egg -->
-      <div id="gallery-container">
-        <h3>📸 Galerie du week-end (Easter Egg)</h3>
-        <div id="gallery"></div>
-
-        <div id="add-image-container">
-          <label for="addImage">Ajouter une image :</label>
-          <input type="file" id="addImage" accept="image/*">
-        </div>
-      </div>
     </section>
+
+    <!-- Easter Egg - Galerie -->
+    <div id="gallery-container">
+      <h3>📸 Galerie du week-end (Easter Egg)</h3>
+      <div id="gallery"></div>
+      <div id="add-image-container">
+        <label for="addImage">Ajouter une image :</label>
+        <input type="file" id="addImage" accept="image/*">
+      </div>
+    </div>
+
   </main>
 
   <script>
-    // Compte à rebours
+    // Countdown
     const target = new Date(2025, 7, 22, 20, 0, 0);
-
     function updateCountdown() {
       const now  = new Date();
       const diff = target - now;
 
-      if (diff <= 0) {
+      if(diff <= 0) {
         document.querySelector('.countdown-teaser').style.display = 'none';
-        document.querySelector('.countdown').style.display        = 'none';
+        document.querySelector('.countdown').style.display = 'none';
         clearInterval(timer);
         return;
       }
@@ -252,45 +223,25 @@
       const minutes = Math.floor((diff / 1000 / 60) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
 
-      document.getElementById('days').textContent    = days;
-      document.getElementById('hours').textContent   = String(hours).padStart(2,'0');
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = String(hours).padStart(2,'0');
       document.getElementById('minutes').textContent = String(minutes).padStart(2,'0');
       document.getElementById('seconds').textContent = String(seconds).padStart(2,'0');
     }
 
-    const timer = setInterval(updateCountdown, 1000);
-    updateCountdown();
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCountdown();
+      window.timer = setInterval(updateCountdown, 1000);
 
-    // Galerie easter egg
-    const gallery = document.getElementById('gallery');
-    const addImageInput = document.getElementById('addImage');
+      // Video auto play
+      const bg = document.getElementById('bg-video');
+      window.addEventListener('pageshow', () => bg.play().catch(() => {}));
+      document.addEventListener('visibilitychange', () => { if(!document.hidden) bg.play().catch(() => {}); });
 
-    addImageInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+      // Easter Egg trigger (double-clic sur le titre)
+      document.querySelector('.title').addEventListener('dblclick', () => {
+        const galleryContainer = document.getElementById('gallery-container');
+        galleryContainer.style.display = galleryContainer.style.display === 'none' ? 'block' : 'none';
+      });
 
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const img = document.createElement('img');
-        img.src = event.target.result;
-
-        const removeBtn = document.createElement('button');
-        removeBtn.textContent = 'Supprimer';
-        removeBtn.classList.add('remove-btn');
-        removeBtn.onclick = () => imgContainer.remove();
-
-        const imgContainer = document.createElement('div');
-        imgContainer.appendChild(img);
-        imgContainer.appendChild(removeBtn);
-
-        gallery.appendChild(imgContainer);
-      }
-      reader.readAsDataURL(file);
-
-      // Reset input
-      addImageInput.value = '';
-    });
-  </script>
-
-</body>
-</html>
+      // Galerie logic
