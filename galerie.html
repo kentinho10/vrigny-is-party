@@ -20,13 +20,37 @@
 
   .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin-top:1rem; }
   .gallery-item { background:#fff; padding:4px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.2); }
-  .gallery-item img { width:100%; height:200px; object-fit:cover; border-radius:6px; }
+  .gallery-item img { width:100%; height:200px; object-fit:cover; border-radius:6px; cursor:pointer; }
   .btn-container { margin-top:4px; display:flex; gap:4px; }
   .download-btn, .delete-btn { flex:1; padding:.3rem .5rem; font-size:.85rem; border:none; border-radius:5px; cursor:pointer; font-weight:600; text-decoration:none; text-align:center; }
   .download-btn { background:#FFD700; color:#111; }
   .delete-btn { background:#E74C3C; color:#fff; }
   .back-btn { display:block; margin:1rem auto; padding:.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:5px; width:120px; }
   .toolbar { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:.5rem; }
+
+  /* Lightbox plein écran */
+  #lightbox {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: none; /* caché par défaut */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  #lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+    box-shadow: 0 0 20px #000;
+    cursor: zoom-out;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
 </style>
 </head>
 <body>
@@ -44,6 +68,9 @@
 </div>
 
 <div class="gallery" id="gallery"></div>
+
+<!-- Lightbox -->
+<div id="lightbox"><img src="" alt="Zoom"></div>
 
 <!-- ============== Firebase v8 (CDN) ============== -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -66,9 +93,11 @@
   // ========= Helpers / UI =========
   const input   = document.getElementById('photoInput');
   const upload  = document.getElementById('uploadBtn');
-  const testBtn = document.getElementById('testBtn');
   const gallery = document.getElementById('gallery');
   const statusEl= document.getElementById('status');
+
+  const lightbox   = document.getElementById('lightbox');
+  const lightboxImg= lightbox.querySelector('img');
 
   function log(msg, isError=false) {
     (isError ? console.error : console.log)(msg);
@@ -152,19 +181,17 @@
     }
   };
 
-  // Bouton de test : pousse une entrée factice dans /photos
-  testBtn.onclick = async () => {
-    try {
-      const keyRef = await db.ref('photos').push({
-        dataUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="orange"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="32" fill="white">TEST OK</text></svg>',
-        name: 'test.svg',
-        createdAt: Date.now()
-      });
-      log('Entrée test créée : ' + keyRef.key);
-    } catch(e) {
-      log('Erreur test push : ' + e.message, true);
+  // Lightbox : ouvrir / fermer
+  gallery.addEventListener('click', (e) => {
+    if (e.target.tagName === 'IMG') {
+      lightboxImg.src = e.target.src;
+      lightbox.style.display = 'flex';
     }
-  };
+  });
+  lightbox.addEventListener('click', () => {
+    lightbox.style.display = 'none';
+    lightboxImg.src = "";
+  });
 
   log('RTDB initialisée. Prête ✅');
 </script>
