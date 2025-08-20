@@ -52,7 +52,7 @@
     cursor:pointer;
     font-weight:600;
   }
-  .download-btn { background:#FFD700; color:#111; text-decoration:none; }
+  .download-btn { background:#FFD700; color:#111; text-decoration:none; text-align:center; }
   .delete-btn { background:#E74C3C; color:#fff; }
   .back-btn {
     display:block; margin:1rem auto; padding:0.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:5px; width:120px; text-align:center;
@@ -72,93 +72,69 @@
 <div class="gallery" id="gallery"></div>
 
 <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.16.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.16.0/firebase-storage-compat.js"></script>
 
 <script>
-// Configuration Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyBq5OSHZzq6mixYfDrlfJHg397VjO_Plyc",
-  authDomain: "kazafete-627b7.firebaseapp.com",
-  databaseURL: "https://kazafete-627b7-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "kazafete-627b7",
-  storageBucket: "kazafete-627b7.appspot.com",
-  messagingSenderId: "1009736388412",
-  appId: "1:1009736388412:web:62f833aa444f0d30909839"
-};
+  // ⚡ Mets ta config ici
+  const firebaseConfig = {
+    apiKey: "AIzaSyBq5OSHZzq6mixYfDrlfJHg397VjO_Plyc",
+    authDomain: "kazafete-627b7.firebaseapp.com",
+    databaseURL: "https://kazafete-627b7-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "kazafete-627b7",
+    storageBucket: "kazafete-627b7.appspot.com",
+    messagingSenderId: "1009736388412",
+    appId: "1:1009736388412:web:62f833aa444f0d30909839"
+  };
 
-// Initialisation Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const storage = firebase.storage();
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const storage = firebase.storage();
 
-const input = document.getElementById('photoInput');
-const btn = document.getElementById('uploadBtn');
-const gallery = document.getElementById('gallery');
+  const input = document.getElementById('photoInput');
+  const btn = document.getElementById('uploadBtn');
+  const gallery = document.getElementById('gallery');
 
-// Afficher les photos depuis Firebase
-function displayPhotos() {
-  gallery.innerHTML = '';
-  db.ref('photos').once('value', snapshot => {
-    const photos = snapshot.val() || [];
-    photos.forEach((photo, i) => {
-      const item = document.createElement('div');
-      item.className = 'gallery-item';
+  // Afficher les photos en temps réel
+  db.ref("photos").on("value", snapshot => {
+    gallery.innerHTML = "";
+    snapshot.forEach(child => {
+      const data = child.val();
+      const key = child.key;
+      const item = document.createElement("div");
+      item.className = "gallery-item";
       item.innerHTML = `
-        <img src="${photo}" alt="Photo #${i+1}">
+        <img src="${data.url}" alt="Photo">
         <div class="btn-container">
-          <a href="${photo}" download="photo${i+1}.jpg" class="download-btn">Télécharger</a>
-          <button class="delete-btn" onclick="deletePhoto(${i})">Supprimer</button>
+          <a href="${data.url}" download class="download-btn">Télécharger</a>
+          <button class="delete-btn" onclick="deletePhoto('${key}')">Supprimer</button>
         </div>
       `;
       gallery.appendChild(item);
     });
   });
-}
 
-// Ajouter des photos
-btn.addEventListener('click', () => {
-  const files = input.files;
-  if(!files.length) return alert("Sélectionne au moins une photo !");
-
-  Array.from(files).forEach(file => {
-    const storageRef = storage.ref('photos/' + Date.now() + '_' + file.name);
-    storageRef.put(file).then(snapshot => {
-      snapshot.ref.getDownloadURL().then(url => {
-        db.ref('photos').once('value', snap => {
-          const photos = snap.val() || [];
-          photos.push(url);
-          db.ref('photos').set(photos);
-          displayPhotos();
-        });
+  // Ajouter une photo
+  btn.addEventListener("click", () => {
+    const files = input.files;
+    if (!files.length) return alert("Sélectionne au moins une photo !");
+    
+    Array.from(files).forEach(file => {
+      const storageRef = storage.ref("photos/" + Date.now() + "-" + file.name);
+      storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL()).then(url => {
+        db.ref("photos").push({ url });
       });
     });
+    input.value = "";
   });
-  input.value = '';
-});
 
-// Supprimer une photo
-function deletePhoto(index) {
-  if(!confirm("Supprimer cette photo ?")) return;
-
-  db.ref('photos').once('value', snapshot => {
-    const photos = snapshot.val() || [];
-    const url = photos[index];
-    if(!url) return;
-
-    // Supprimer du Storage
-    storage.refFromURL(url).delete().then(() => {
-      photos.splice(index,1);
-      db.ref('photos').set(photos);
-      displayPhotos();
-    }).catch(err => console.error(err));
-  });
-}
-
-// Rafraîchir à chaque changement
-db.ref('photos').on('value', displayPhotos);
-
+  // Supprimer une photo
+  function deletePhoto(key) {
+    if (confirm("Supprimer cette photo ?")) {
+      db.ref("photos/" + key).remove();
+    }
+  }
 </script>
 
 </body>
