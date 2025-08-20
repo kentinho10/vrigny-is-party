@@ -1,65 +1,30 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>Librairie de Photos - La Kaz à Fête !</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <style>
-  body { margin:0; font-family: 'Pacifico', cursive; background:#FAF9F6; color:#333; text-align:center; padding:1rem; }
+  body { margin:0; font-family:'Pacifico',cursive; background:#FAF9F6; color:#333; text-align:center; padding:1rem; }
   h1 { margin-bottom:1rem; font-size:2rem; color:#FFB347; }
   .upload-section { margin-bottom:1rem; }
   input[type="file"] { margin:0.5rem 0; }
   button {
     padding:0.5rem 1rem; border:none; background:#6F42C1; color:#fff; border-radius:5px; cursor:pointer;
-    font-weight:600; transition: transform 0.2s;
+    font-weight:600; transition: transform .2s;
   }
   button:hover { transform: scale(1.05); }
   .hint { font-size:.9rem; color:#666; margin-top:.5rem; }
-  .gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
-    gap:12px;
-    margin-top:1rem;
-  }
-  .gallery-item {
-    position: relative;
-    border-radius:8px;
-    overflow: hidden;
-    background:#fff;
-    padding:4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  }
-  .gallery-item img {
-    width:100%; height:200px;
-    object-fit:cover;
-    border-radius:6px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    cursor:pointer;
-  }
-  .gallery-item img:hover { transform: scale(1.05); box-shadow: 0 0 15px #FFD700; }
-  .btn-container {
-    margin-top:4px;
-    display:flex;
-    justify-content:space-between;
-    gap:4px;
-  }
-  .download-btn, .delete-btn {
-    flex:1;
-    padding:0.3rem 0.5rem;
-    font-size:0.85rem;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    font-weight:600;
-    text-decoration:none;
-    text-align:center;
-  }
+  #status { margin: .75rem auto; max-width: 900px; font-size:.95rem; color:#6F42C1; }
+  .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin-top:1rem; }
+  .gallery-item { position:relative; border-radius:8px; overflow:hidden; background:#fff; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,.2); }
+  .gallery-item img { width:100%; height:200px; object-fit:cover; border-radius:6px; }
+  .btn-container { margin-top:4px; display:flex; gap:4px; }
+  .download-btn, .delete-btn { flex:1; padding:.3rem .5rem; font-size:.85rem; border:none; border-radius:5px; cursor:pointer; font-weight:600; text-decoration:none; text-align:center; }
   .download-btn { background:#FFD700; color:#111; }
   .delete-btn { background:#E74C3C; color:#fff; }
-  .back-btn {
-    display:block; margin:1rem auto; padding:0.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:5px; width:120px; text-align:center;
-  }
+  .back-btn { display:block; margin:1rem auto; padding:.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:5px; width:120px; }
 </style>
 </head>
 <body>
@@ -69,8 +34,9 @@
 
 <div class="upload-section">
   <input type="file" id="photoInput" accept="image/*" multiple>
-  <button id="uploadBtn">Ajouter</button>
-  <div class="hint">Les photos sont compressées avant envoi (max ~1280px) et stockées dans la Realtime Database.</div>
+  <button id="uploadBtn" type="button">Ajouter</button>
+  <div class="hint">Les photos sont compressées (max ~1280px) et stockées dans la Realtime Database.</div>
+  <div id="status"></div>
 </div>
 
 <div class="gallery" id="gallery"></div>
@@ -80,7 +46,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.16.0/firebase-database-compat.js"></script>
 
 <script>
-  // ✅ Config Realtime Database (sans Storage)
+  // ===== Config RTDB uniquement =====
   const firebaseConfig = {
     apiKey: "AIzaSyBq5OSHZzq6mixYfDrlfJHg397VjO_Plyc",
     authDomain: "kazafete-627b7.firebaseapp.com",
@@ -93,11 +59,22 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  const input = document.getElementById('photoInput');
-  const btn = document.getElementById('uploadBtn');
-  const gallery = document.getElementById('gallery');
+  // ===== Helpers UI / Logs =====
+  const statusEl = document.getElementById('status');
+  function log(msg, err) {
+    console[err ? 'error' : 'log'](msg);
+    statusEl.textContent = msg;
+  }
 
-  // --- Compression client (canvas) ---
+  // Auto-répare /photos si saisi comme "null" par erreur
+  db.ref('photos').once('value').then(snap => {
+    if (typeof snap.val() === 'string') {
+      log('Correction: /photos était une chaîne "null" → remise à null.');
+      return db.ref('photos').set(null);
+    }
+  });
+
+  // ===== Compression image (canvas) =====
   function compressImage(file, maxW = 1280, maxH = 1280, quality = 0.8) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -105,16 +82,12 @@
       reader.onload = e => { img.src = e.target.result; };
       reader.onerror = reject;
       img.onload = () => {
-        let { width, height } = img;
-        // Redimension
-        const ratio = Math.min(maxW / width, maxH / height, 1);
-        const w = Math.round(width * ratio);
-        const h = Math.round(height * ratio);
+        const ratio = Math.min(maxW / img.width, maxH / img.height, 1);
+        const w = Math.round(img.width * ratio);
+        const h = Math.round(img.height * ratio);
         const canvas = document.createElement('canvas');
         canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        // JPEG (change en "image/png" si besoin)
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         const dataUrl = canvas.toDataURL('image/jpeg', quality);
         resolve(dataUrl);
       };
@@ -123,57 +96,75 @@
     });
   }
 
-  // --- Rendu d'une vignette ---
-  function renderItem(key, url, name) {
+  // ===== Rendu d'un item =====
+  const gallery = document.getElementById('gallery');
+  function renderItem(key, data) {
+    const url = data.dataUrl || data.url;
+    const name = data.name || 'photo';
     const item = document.createElement('div');
     item.className = 'gallery-item';
     item.dataset.key = key;
     item.innerHTML = `
-      <img src="${url}" alt="${name || 'Photo'}">
+      <img src="${url}" alt="${name}">
       <div class="btn-container">
-        <a class="download-btn" href="${url}" download="${(name || 'photo')}.jpg">Télécharger</a>
+        <a class="download-btn" href="${url}" download="${name.replace(/\.[^/.]+$/, '')}.jpg">Télécharger</a>
         <button class="delete-btn">Supprimer</button>
       </div>
     `;
     item.querySelector('.delete-btn').addEventListener('click', async () => {
       if (!confirm('Supprimer cette photo pour tout le monde ?')) return;
-      await db.ref('photos/' + key).remove();
+      try {
+        await db.ref('photos/' + key).remove();
+        log('Photo supprimée.');
+      } catch (e) {
+        log('Erreur suppression: ' + e.message, true);
+      }
     });
     return item;
   }
 
-  // --- Écoute temps réel ---
+  // ===== Lecture temps réel =====
   db.ref('photos').orderByChild('createdAt').on('value', snap => {
-    gallery.innerHTML = '';
     const val = snap.val();
-    if (!val) return;
-    const entries = Object.entries(val).sort((a,b) => (b[1].createdAt||0) - (a[1].createdAt||0));
+    gallery.innerHTML = '';
+    if (!val) { log('Aucune photo pour le moment.'); return; }
+    const entries = Object.entries(val).sort((a,b) => (b[1].createdAt||0)-(a[1].createdAt||0));
     for (const [key, data] of entries) {
-      gallery.appendChild(renderItem(key, data.dataUrl || data.url, data.name));
+      gallery.appendChild(renderItem(key, data));
     }
+    log(`Photos chargées : ${entries.length}`);
+  }, err => {
+    log('Erreur lecture DB: ' + err.message, true);
   });
 
-  // --- Upload vers RTDB uniquement ---
+  // ===== Upload =====
+  const input = document.getElementById('photoInput');
+  const btn = document.getElementById('uploadBtn');
   btn.addEventListener('click', async () => {
-    const files = Array.from(input.files);
-    if (!files.length) return alert("Sélectionne au moins une photo !");
-    for (const file of files) {
-      try {
+    try {
+      const files = Array.from(input.files || []);
+      if (!files.length) { log('Sélectionne au moins une photo.', true); return; }
+      btn.disabled = true; log('Compression & envoi en cours…');
+
+      for (const file of files) {
         const dataUrl = await compressImage(file, 1280, 1280, 0.8);
         await db.ref('photos').push({
-          dataUrl,                      // <- l’image encodée base64
+          dataUrl,
           name: file.name || 'photo',
           createdAt: Date.now()
         });
-      } catch (e) {
-        console.error('Erreur upload:', e);
-        alert("Impossible d'ajouter la photo.");
       }
+      log('Upload terminé ✅');
+      input.value = '';
+    } catch (e) {
+      log('Erreur upload: ' + e.message, true);
+    } finally {
+      btn.disabled = false;
     }
-    input.value = '';
   });
 
-  console.log('RTDB only: prêt ✅');
+  // Sanity checks
+  log('RTDB initialisée. SDK OK ? ' + (firebase.apps.length > 0));
 </script>
 
 </body>
