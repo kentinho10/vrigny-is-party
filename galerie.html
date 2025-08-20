@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Librairie de Photos - La Kaz à Fête !</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; font-family: 'Pacifico', cursive; background:#FAF9F6; color:#333; text-align:center; padding:1rem; }
+  h1 { margin-bottom:1rem; font-size:2rem; color:#FFB347; cursor:pointer; }
+  .upload-section { margin-bottom:1rem; }
+  input[type="file"] { margin:0.5rem 0; }
+  button {
+    padding:0.5rem 1rem; border:none; background:#6F42C1; color:#fff; border-radius:5px; cursor:pointer;
+    font-weight:600; transition: transform 0.2s;
+  }
+  button:hover { transform: scale(1.05); }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(100px,1fr));
+    gap:8px;
+    margin-top:1rem;
+  }
+  .gallery img {
+    width:100%; height:100px;
+    object-fit:cover;
+    border-radius:8px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor:pointer;
+  }
+  .gallery img:hover { transform: scale(1.1); box-shadow: 0 0 15px #FFD700; }
+  .back-btn {
+    display:block; margin:1rem auto; padding:0.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:5px; width:120px; text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Librairie de Photos 🌴</h1>
+<a href="index.html" class="back-btn">← Accueil</a>
+
+<div class="upload-section">
+  <input type="file" id="photoInput" accept="image/*" multiple>
+  <button id="uploadBtn">Ajouter</button>
+</div>
+
+<div class="gallery" id="gallery"></div>
+
+<script>
+const input = document.getElementById('photoInput');
+const btn = document.getElementById('uploadBtn');
+const gallery = document.getElementById('gallery');
+
+let photos = JSON.parse(localStorage.getItem('photos') || '[]');
+
+function displayPhotos() {
+  gallery.innerHTML = '';
+  photos.forEach((src, i) => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.title = `Photo #${i+1}`;
+    img.addEventListener('click', () => {
+      if(confirm("Supprimer cette photo ?")) {
+        photos.splice(i,1);
+        localStorage.setItem('photos', JSON.stringify(photos));
+        displayPhotos();
+      }
+    });
+    gallery.appendChild(img);
+  });
+}
+
+// Ajouter de nouvelles photos
+btn.addEventListener('click', () => {
+  const files = input.files;
+  if(!files.length) return alert("Sélectionne au moins une photo !");
+  
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      photos.push(e.target.result);
+      localStorage.setItem('photos', JSON.stringify(photos));
+      displayPhotos();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+});
+
+displayPhotos();
+</script>
+
+</body>
+</html>
