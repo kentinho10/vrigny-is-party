@@ -2,61 +2,114 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'Arial', sans-serif;
   overflow-x: hidden;
-}
-#bg-video {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  min-width: 100%;
-  min-height: 100%;
-  z-index: -1;
-}
-header {
-  text-align: center;
-  padding: 2rem;
-}
-header .title {
-  font-size: 3rem;
-  color: #fff;
-  text-shadow: 2px 4px 8px rgba(0,0,0,0.5);
-  margin-bottom: 1rem;
-}
-header nav a {
-  color: #fff;
-  margin: 0 1rem;
-  text-decoration: none;
-  font-weight: bold;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+  color: #3a0842;
 }
 
-/* --- Flip-clock pastel pour programme.html --- */
+/* --- Bouton retour accueil --- */
+.back-btn {
+  background: #5a189a;
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  margin: 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s, background 0.2s;
+}
+.back-btn:hover {
+  transform: scale(1.05);
+  background: #7b2cbf;
+}
+
+/* --- Titres --- */
+h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin: 1rem 0;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+}
+h3 {
+  font-size: 1.8rem;
+  margin-top: 2rem;
+  color: #f72585;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* --- Flip-clock pastel et festif --- */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
 
 .flip-clock {
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(80px,1fr));
-  gap: 1rem;
-  padding: 1rem;
-}
-.flip-card {
-  font-family: 'Orbitron', sans-serif;
-  background: #f0f8ff;
-  border-radius: 10px;
-  padding: 1rem;
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-.flip-card .label {
-  font-size: 0.8rem;
-  color: #666;
-}
-.flip-card .value {
-  font-size: 2rem;
-  color: #5a189a;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
 }
 
-/* --- Tableaux classement/admin --- */
+.flip-card {
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(to bottom right, #ffecd2, #fcb69f);
+  border-radius: 15px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: appear 0.8s ease forwards;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.flip-card:nth-child(1) { animation-delay: 0.2s; }
+.flip-card:nth-child(2) { animation-delay: 0.4s; }
+.flip-card:nth-child(3) { animation-delay: 0.6s; }
+
+.flip-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+}
+
+.flip-card .label {
+  font-size: 1rem;
+  color: #7209b7;
+  margin-bottom: 0.5rem;
+}
+.flip-card .value p {
+  font-size: 1rem;
+  margin: 0.3rem 0;
+  color: #3a0842;
+}
+
+/* --- Animation apparition --- */
+@keyframes appear {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Section programme classique --- */
+.programme ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.programme li {
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0.4rem 0;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  transition: transform 0.2s, background 0.2s;
+}
+.programme li:hover {
+  transform: scale(1.03);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Tableaux / Admin --- */
 table {
   width: 90%;
   margin: 1rem auto;
@@ -72,4 +125,11 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+/* --- Responsive --- */
+@media screen and (max-width: 600px) {
+  .flip-clock {
+    grid-template-columns: 1fr;
+  }
 }
