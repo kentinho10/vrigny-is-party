@@ -83,6 +83,12 @@
     .leaderboard-item.rank-20{ background:#4895EF }
     .leaderboard-item.rank-21{ background:#4895EF }
     .leaderboard-item.rank-22{ background:#4895EF }
+    .leaderboard-item.rank-23{ background:#4895EF }
+    .leaderboard-item.rank-24{ background:#4895EF }
+    .leaderboard-item.rank-25{ background:#4895EF }
+    .leaderboard-item.rank-26{ background:#4895EF }
+    .leaderboard-item.rank-27{ background:#4895EF }
+    .leaderboard-item.rank-28{ background:#4895EF }
     @media(max-width:400px){
       .leaderboard{max-width:100%}
       .leaderboard-header{font-size:6vw}
@@ -120,7 +126,7 @@
       container.innerHTML = '';
       Object.values(players || [])
         .sort((a,b)=>b.score - a.score)
-        .slice(0,20)
+        .slice(0,28)
         .forEach((p, idx) => {
           const rank = idx+1;
           const li = document.createElement('li');
