@@ -5,7 +5,7 @@
   <title>La Kaz à Fête !</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Styles globaux -->
+  <!-- Styles globaux éventuels de ton site -->
   <link rel="stylesheet" href="style.css">
   <!-- Polices : Pacifico pour le titre, Orbitron pour les chiffres -->
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Orbitron&display=swap" rel="stylesheet">
@@ -17,6 +17,7 @@
       color: #333;
       background: #FAF9F6;
       text-align: center;
+      overflow-x: hidden;
     }
     /* Vidéo de fond */
     #bg-video {
@@ -50,50 +51,77 @@
       align-items: center; justify-content: flex-start;
       padding: 1.5rem 1rem 2rem;
     }
-    .hero h2 {
-      font-size: 2rem; margin: 0.5rem 0 1rem;
-    }
-    .cta-buttons {
-      display: flex; gap: 1rem;
-      flex-wrap: wrap; justify-content: center;
-      margin-bottom: 1.5rem;
-    }
+    .hero h2 { font-size: 2rem; margin: 0.5rem 0 1rem; }
+    .cta-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; }
     .cta-btn {
       padding: 0.75rem 1.5rem; font-size: 1rem;
       color: #fff; background: #000;
       text-decoration: none; font-weight: 600;
-      border-radius: 6px;
-      transition: background 0.3s;
+      border-radius: 6px; transition: background 0.3s;
     }
     .cta-btn:hover { background: #333; }
-    .countdown-teaser {
-      font-family: 'Pacifico', cursive;
-      font-size: 1.5rem; color: #6F42C1;
-      margin-bottom: 1rem;
-    }
-    .countdown {
-      display: flex; flex-wrap: wrap;
-      justify-content: center; align-items: center;
-      padding: 0 1rem 2rem; max-width: 600px;
-      margin: 0 auto;
-    }
+    .countdown-teaser { font-family: 'Pacifico', cursive; font-size: 1.5rem; color: #6F42C1; margin-bottom: 1rem; }
+    .countdown { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; padding: 0 1rem 2rem; max-width: 600px; margin: 0 auto; }
     .countdown-card {
-      background: #fff; margin: 0.5rem; padding: 1rem;
-      min-width: 70px; border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      background: #fff; margin: 0.5rem; padding: 1rem; min-width: 70px;
+      border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
     .countdown-card:nth-child(1) { background: #FFEBEE; }
     .countdown-card:nth-child(2) { background: #E3F2FD; }
     .countdown-card:nth-child(3) { background: #E8F5E9; }
     .countdown-card:nth-child(4) { background: #FFF3E0; }
-    .countdown-card .value {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2rem; color: #333; line-height: 1;
+    .countdown-card .value { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #333; line-height: 1; }
+    .countdown-card .label { margin-top: 0.25rem; font-size: 0.75rem; text-transform: uppercase; color: #666; }
+
+    /* ==== Tête qui se balance ==== */
+    .swing-head {
+      width: 180px;
+      margin: 1rem auto 0;
+      cursor: pointer;
+      display: block;
+      animation: swing 3s infinite ease-in-out;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
+      will-change: transform;
     }
-    .countdown-card .label {
-      margin-top: 0.25rem; font-size: 0.75rem;
-      text-transform: uppercase; color: #666;
+    @keyframes swing {
+      0%   { transform: rotate(-8deg); }
+      50%  { transform: rotate(8deg); }
+      100% { transform: rotate(-8deg); }
     }
+
+    /* ==== Overlay Affiche ==== */
+    #overlay {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    #overlay img {
+      max-width: 90%; max-height: 90%;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+      transform: scale(0.85);
+      opacity: 0;
+      transition: transform 0.28s ease, opacity 0.28s ease;
+    }
+    #overlay.show img {
+      transform: scale(1);
+      opacity: 1;
+    }
+    #overlay .close-btn {
+      position: absolute;
+      top: 20px; right: 30px;
+      font-size: 2.5rem;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+    }
+    #overlay .close-btn:hover { color: #E74C3C; }
+
     @media (max-width: 600px) {
       .title { font-size: 2.2rem; }
       .hero h2 { font-size: 1.5rem; }
@@ -101,6 +129,7 @@
       .countdown-card { min-width: 50px; padding: 0.75rem; }
       .countdown-card .value { font-size: 1.5rem; }
       .countdown-teaser { font-size: 1.2rem; }
+      .swing-head { width: 150px; }
     }
   </style>
 </head>
@@ -118,6 +147,9 @@
   <main>
     <section class="hero">
       <h2>Bienvenue au week-end le plus fun de l’été</h2>
+
+      <!-- Tête qui se balance (utilise ton image des têtes) -->
+      <img src="tetes.png" alt="Les têtes" class="swing-head" id="head">
 
       <!-- CTA -->
       <div class="cta-buttons">
@@ -148,6 +180,12 @@
     </section>
   </main>
 
+  <!-- Overlay : affiche en grand -->
+  <div id="overlay">
+    <span class="close-btn" aria-label="Fermer l'affiche">&times;</span>
+    <img src="affiche.png" alt="Affiche grand format">
+  </div>
+
   <script>
     // Date cible : 22 août 2025 à 20h (mois indexé à 0)
     const target = new Date(2025, 7, 22, 20, 0, 0);
@@ -156,7 +194,6 @@
       const now  = new Date();
       const diff = target - now;
 
-      // Masquer teaser et countdown après la date
       if (diff <= 0) {
         document.querySelector('.countdown-teaser').style.display = 'none';
         document.querySelector('.countdown').style.display        = 'none';
@@ -186,13 +223,13 @@
         if (!document.hidden) bg.play().catch(() => {});
       });
 
-      // Easter egg : triple clic sur le titre ouvre la librairie de photos
+      // Easter egg : triple clic sur le titre -> galerie
       const title = document.querySelector('.title');
       let clickCount = 0;
       let timerClick;
       title.addEventListener('click', () => {
         clickCount++;
-        if(clickCount === 3) {
+        if (clickCount === 3) {
           window.location.href = "galerie.html";
           clickCount = 0;
           clearTimeout(timerClick);
@@ -200,6 +237,31 @@
           clearTimeout(timerClick);
           timerClick = setTimeout(() => clickCount = 0, 1000);
         }
+      });
+
+      // Tête -> ouvre l'overlay affiche
+      const head = document.getElementById('head');
+      const overlay = document.getElementById('overlay');
+      const closeBtn = overlay.querySelector('.close-btn');
+
+      head.addEventListener('click', () => {
+        overlay.style.display = 'flex';
+        // petit délai pour déclencher la transition CSS
+        setTimeout(() => overlay.classList.add('show'), 10);
+      });
+
+      function closeOverlay() {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.style.display = 'none', 280);
+      }
+
+      // Fermer avec la croix, avec la touche ESC, ou en cliquant le fond
+      closeBtn.addEventListener('click', closeOverlay);
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeOverlay();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.style.display === 'flex') closeOverlay();
       });
     });
   </script>
