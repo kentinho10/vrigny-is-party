@@ -71,6 +71,29 @@
       font-size: 0.9rem;
       color: #333;
     }
+
+    textarea {
+      width: 90%;
+      max-width: 400px;
+      height: 120px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      padding: 8px;
+      font-size: 0.95rem;
+    }
+
+    .btn {
+      margin: 8px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      background: #6F42C1;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn:hover { background: #8b5cf6; }
   </style>
 </head>
 <body>
@@ -86,9 +109,21 @@
       <input type="checkbox" id="removeOnPick" checked>
       Retirer automatiquement le gage tiré
     </label>
-    <button onclick="resetWheel()">🔄 Repartir de zéro</button>
-    <button onclick="shuffleWheel()">🎲 Mélanger</button>
+    <button class="btn" onclick="resetWheel()">🔄 Repartir de zéro</button>
+    <button class="btn" onclick="shuffleWheel()">🎲 Mélanger</button>
   </div>
+
+  <h3>✏️ Personnalise tes gages</h3>
+  <textarea id="gagesInput">Chante une chanson 🎤
+Danse 30 sec 💃
+Fais un compliment 💖
+Imite quelqu’un 🤪
+Dis une blague 😂
+Selfie collectif 🤳
+Un shot 🔥
+10 pompes 💪</textarea>
+  <br>
+  <button class="btn" onclick="applyGages()">✅ Appliquer les gages</button>
 
   <div class="result" id="result"></div>
 
@@ -140,7 +175,7 @@
         ctx.rotate(start + arc / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#333";
-        ctx.font = "bold 16px Arial";
+        ctx.font = "bold 14px Arial";
         ctx.fillText(gage, radius - 10, 5);
         ctx.restore();
       });
@@ -191,6 +226,16 @@
     function shuffleWheel() {
       gages.sort(() => Math.random() - 0.5);
       drawWheel();
+    }
+
+    function applyGages() {
+      const input = document.getElementById("gagesInput").value.trim();
+      if (input) {
+        gagesBase = input.split("\n").map(g => g.trim()).filter(Boolean);
+        gages = [...gagesBase];
+        resultDiv.textContent = "";
+        drawWheel();
+      }
     }
 
     drawWheel();
