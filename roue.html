@@ -5,118 +5,74 @@
   <title>Roue des Gages — La Kaz à Fête !</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root {
-      --primary: #5a189a;
-      --bg1: #fdfbfb;
-      --bg2: #ebedee;
+    :root { --primary:#5a189a; --bg1:#fdfbfb; --bg2:#ebedee; }
+    body{
+      margin:0; font-family:Arial, sans-serif;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      min-height:100vh; display:flex; flex-direction:column; align-items:center;
+      padding:16px; color:#333; text-align:center;
     }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
-      color: #333;
-      text-align: center;
-    }
-    h1 { color: var(--primary); margin: 8px 0 12px; }
+    h1{ color:var(--primary); margin:8px 0 8px; }
 
-    /* Conteneur de la roue : toujours centré, responsive, carré */
-    .wheel-wrap {
-      position: relative;
-      width: min(92vw, 520px);
-      aspect-ratio: 1 / 1;
-      margin: 0 auto 12px;
-    }
-    /* Canvas plein dans son parent carré */
-    #wheel {
-      width: 100%;
-      height: 100%;
-      display: block;
-      border-radius: 50%;
-      box-shadow: 0 10px 24px rgba(0,0,0,.18);
-      background: radial-gradient(ellipse at center, rgba(255,255,255,.45), rgba(255,255,255,.2));
-    }
-    /* Flèche au-dessus (pointe) */
-    .pointer {
-      position: absolute;
-      top: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 16px solid transparent;
-      border-right: 16px solid transparent;
-      border-bottom: 28px solid #111; /* couleur de la pointe */
-      filter: drop-shadow(0 3px 6px rgba(0,0,0,.35));
-      z-index: 3;
+    /* Résultat entre le titre et la roue */
+    .result{
+      font-size:1.15rem; font-weight:800; color:#E74C3C;
+      min-height:1.6em; margin:6px 0 12px;
     }
 
-    /* Bouton “Tourner” centré au milieu de la roue */
-    .spin-center {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none; /* laisse passer les événements au canvas sauf le bouton */
-    }
-    .spin-btn {
-      pointer-events: auto;
-      width: clamp(84px, 20vw, 120px);
-      height: clamp(84px, 20vw, 120px);
-      border-radius: 50%;
-      border: none;
-      background: #111;
-      color: #fff;
-      font-weight: 900;
-      font-size: clamp(.9rem, 3.2vw, 1.05rem);
-      cursor: pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,.35), inset 0 4px 10px rgba(255,255,255,.15);
-      transition: transform .15s ease, filter .2s ease, background .2s ease;
-    }
-    .spin-btn:hover { transform: scale(1.04); filter: brightness(1.05); }
-    .spin-btn:active { transform: scale(.98); }
-    .spin-btn:disabled { opacity: .65; cursor: not-allowed; }
-
-    .controls, .options {
-      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 10px 0;
-    }
-    .btn {
-      background: var(--primary); color: #fff; border: none;
-      border-radius: 10px; padding: .55rem .9rem; font-weight: 800; cursor: pointer;
-    }
-    .btn.ghost { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
-    .btn.ok { background: #2ca58d; }
-    .btn:disabled { opacity: .6; cursor: not-allowed; }
-
-    .options label {
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,.75);
-      padding: .25rem .6rem; border-radius: 999px; font-weight: 700;
-      box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    /* Conteneur de la roue : centré, responsive, carré */
+    .wheel-wrap{ position:relative; width:min(92vw,520px); aspect-ratio:1/1; margin:0 auto 12px; }
+    #wheel{
+      width:100%; height:100%; display:block; border-radius:50%;
+      box-shadow:0 10px 24px rgba(0,0,0,.18);
+      background:radial-gradient(ellipse at center, rgba(255,255,255,.45), rgba(255,255,255,.2));
     }
 
-    textarea {
-      width: min(92vw, 520px);
-      min-height: 120px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      font-size: .95rem;
-      resize: vertical;
-      margin: 6px auto 0;
+    /* Flèche en BAS (autre côté) pour pointer précisément l’arrêt */
+    .pointer{
+      position:absolute; bottom:-8px; left:50%; transform:translateX(-50%) rotate(180deg);
+      width:0; height:0;
+      border-left:16px solid transparent; border-right:16px solid transparent;
+      border-bottom:28px solid #111; /* triangle vers le bas (après rotation: vers le haut visuel) */
+      filter:drop-shadow(0 3px 6px rgba(0,0,0,.35)); z-index:3;
     }
 
-    .result {
-      font-size: 1.2rem; font-weight: 800; color: #E74C3C; margin-top: 10px;
+    /* Bouton “Tourner” au centre */
+    .spin-center{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+    .spin-btn{
+      pointer-events:auto; width:clamp(84px,20vw,120px); height:clamp(84px,20vw,120px);
+      border-radius:50%; border:none; background:#111; color:#fff; font-weight:900;
+      font-size:clamp(.9rem,3.2vw,1.05rem); cursor:pointer;
+      box-shadow:0 10px 24px rgba(0,0,0,.35), inset 0 4px 10px rgba(255,255,255,.15);
+      transition:transform .15s ease, filter .2s ease, background .2s ease;
+    }
+    .spin-btn:hover{ transform:scale(1.04); filter:brightness(1.05); }
+    .spin-btn:active{ transform:scale(.98); }
+    .spin-btn:disabled{ opacity:.65; cursor:not-allowed; }
+
+    .controls,.options{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:10px 0; }
+    .btn{ background:var(--primary); color:#fff; border:none; border-radius:10px; padding:.55rem .9rem; font-weight:800; cursor:pointer; }
+    .btn.ghost{ background:transparent; border:2px solid var(--primary); color:var(--primary); }
+    .btn.ok{ background:#2ca58d; }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+    .options label{
+      display:flex; align-items:center; gap:8px;
+      background:rgba(255,255,255,.75); padding:.25rem .6rem; border-radius:999px; font-weight:700;
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+    }
+
+    textarea{
+      width:min(92vw,520px); min-height:120px; border-radius:10px; border:1px solid #ccc;
+      padding:10px; font-size:.95rem; resize:vertical; margin:6px auto 0;
     }
   </style>
 </head>
 <body>
   <h1>🎡 Roue des Gages 🎉</h1>
+
+  <!-- Résultat persistant (jusqu’au prochain clic sur “Tourner”) -->
+  <div class="result" id="result"></div>
 
   <!-- ROUE -->
   <div class="wheel-wrap">
@@ -128,10 +84,7 @@
   </div>
 
   <div class="options">
-    <label>
-      <input type="checkbox" id="removeOnPick" checked />
-      Retirer automatiquement le gage tiré
-    </label>
+    <label><input type="checkbox" id="removeOnPick" checked /> Retirer automatiquement le gage tiré</label>
   </div>
 
   <div class="controls">
@@ -148,11 +101,7 @@ Dis une blague 😂
 Selfie collectif 🤳
 Un shot 🔥
 10 pompes 💪</textarea>
-  <div class="controls">
-    <button class="btn" id="applyBtn">✅ Appliquer les gages</button>
-  </div>
-
-  <div class="result" id="result"></div>
+  <div class="controls"><button class="btn" id="applyBtn">✅ Appliquer les gages</button></div>
 
   <script>
     // ===== Données =====
@@ -168,7 +117,6 @@ Un shot 🔥
     ];
     let gages = [...gagesBase];
 
-    // Palette pastel étendue
     const colors = [
       "#FFE3EC","#FFF3C4","#D6F4FF","#E8F8EA",
       "#FDE2E4","#E7E6FF","#FBE7C6","#E4F1F7",
@@ -176,143 +124,114 @@ Un shot 🔥
       "#EBD4EF","#DFF3E4","#F9E0AE","#C7F0FF"
     ];
 
-    // ===== Canvas & centrage/retina =====
+    // ===== Canvas & retina =====
     const canvas = document.getElementById('wheel');
-    const ctx = canvas.getContext('2d', { alpha: true });
-    function resizeCanvas() {
+    const ctx = canvas.getContext('2d', { alpha:true });
+    function resizeCanvas(){
       const dpr = window.devicePixelRatio || 1;
       const { width, height } = canvas.getBoundingClientRect();
-      canvas.width  = Math.round(width * dpr);
+      canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // scale logique → CSS pixels
+      ctx.setTransform(dpr,0,0,dpr,0,0);
       drawWheel();
     }
-    // Crée un carré réactif (aspect-ratio fait le job pour la taille CSS)
     const wheelWrap = document.querySelector('.wheel-wrap');
-    const ro = new ResizeObserver(resizeCanvas);
-    ro.observe(wheelWrap);
+    new ResizeObserver(resizeCanvas).observe(wheelWrap);
 
     // ===== État spin =====
-    let angle = 0;         // radians
+    let angle = 0;       // radians
     let spinning = false;
 
-    function drawWheel() {
+    function drawWheel(){
       const rect = canvas.getBoundingClientRect();
       const size = Math.min(rect.width, rect.height);
-      const cx = size / 2;
-      const cy = size / 2;
-      const r  = size / 2 - 6;
+      const cx = size/2, cy = size/2, r = size/2 - 6;
 
-      ctx.clearRect(0, 0, rect.width, rect.height);
+      ctx.clearRect(0,0,rect.width,rect.height);
 
-      if (gages.length === 0) {
-        // cercle vide
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(0,0,0,.25)';
-        ctx.lineWidth = 6;
-        ctx.stroke();
+      if (gages.length === 0){
+        ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+        ctx.strokeStyle='rgba(0,0,0,.25)'; ctx.lineWidth=6; ctx.stroke();
         return;
       }
 
-      const arc = (Math.PI * 2) / gages.length;
+      const arc = (Math.PI*2)/gages.length;
 
       // Anneau externe
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.lineWidth = 6;
-      ctx.strokeStyle = 'rgba(0,0,0,.25)';
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.lineWidth=6; ctx.strokeStyle='rgba(0,0,0,.25)'; ctx.stroke();
 
       // Secteurs
-      for (let i = 0; i < gages.length; i++) {
-        const start = angle + i * arc;
+      for (let i=0;i<gages.length;i++){
+        const start = angle + i*arc;
         const end   = start + arc;
 
-        // Dégradé radial doux
-        const grad = ctx.createRadialGradient(cx, cy, r*0.2, cx, cy, r);
-        grad.addColorStop(0, 'rgba(255,255,255,.85)');
+        const grad = ctx.createRadialGradient(cx,cy,r*0.2, cx,cy,r);
+        grad.addColorStop(0,'rgba(255,255,255,.85)');
         grad.addColorStop(1, colors[i % colors.length]);
 
         ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, r - 6, start, end);
+        ctx.moveTo(cx,cy);
+        ctx.arc(cx,cy,r-6,start,end);
         ctx.closePath();
         ctx.fillStyle = grad;
         ctx.fill();
 
         // Séparateur
         ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + (r - 6) * Math.cos(start), cy + (r - 6) * Math.sin(start));
-        ctx.strokeStyle = 'rgba(0,0,0,.12)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        ctx.moveTo(cx,cy);
+        ctx.lineTo(cx+(r-6)*Math.cos(start), cy+(r-6)*Math.sin(start));
+        ctx.strokeStyle='rgba(0,0,0,.12)'; ctx.lineWidth=2; ctx.stroke();
 
         // Texte
         ctx.save();
-        ctx.translate(cx, cy);
-        ctx.rotate(start + arc / 2);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#222";
-        ctx.font = "bold 16px Arial";
-        wrapText(ctx, gages[i], r - 20, 20);
+        ctx.translate(cx,cy);
+        ctx.rotate(start + arc/2);
+        ctx.textAlign="right"; ctx.fillStyle="#222"; ctx.font="bold 16px Arial";
+        wrapText(ctx, gages[i], r-20, 20);
         ctx.restore();
       }
 
-      // Highlight live du secteur pointé (optionnel : ici léger halo)
-      const idx = indexUnderPointer();
-      if (idx >= 0) {
-        const start = angle + idx * arc;
+      // Mise en évidence légère du secteur sous la flèche (en bas)
+      const idx = indexUnderPointerBottom();
+      if (idx >= 0){
+        const start = angle + idx*arc;
         const end   = start + arc;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, r - 6, start, end);
-        ctx.closePath();
-        ctx.fillStyle = 'rgba(255,255,255,.16)';
-        ctx.fill();
+        ctx.beginPath(); ctx.moveTo(cx,cy);
+        ctx.arc(cx,cy,r-6,start,end); ctx.closePath();
+        ctx.fillStyle='rgba(255,255,255,.16)'; ctx.fill();
       }
 
-      // Cercle central décoratif (autour du bouton)
-      ctx.beginPath();
-      ctx.arc(cx, cy, Math.min(66, r * 0.28), 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255,255,255,.95)';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,.15)';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      // Cercle central autour du bouton
+      ctx.beginPath(); ctx.arc(cx,cy,Math.min(66,r*0.28),0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,.95)'; ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,.15)'; ctx.lineWidth=2; ctx.stroke();
     }
 
-    function wrapText(ctx, text, maxWidth, lineHeight) {
+    function wrapText(ctx, text, maxWidth, lineHeight){
       const words = String(text).split(' ');
-      let line = '';
-      const lines = [];
-      for (const w of words) {
-        const test = line ? line + ' ' + w : w;
-        if (ctx.measureText(test).width > maxWidth) {
-          if (line) lines.push(line);
-          line = w;
-        } else {
-          line = test;
-        }
+      let line=''; const lines=[];
+      for (const w of words){
+        const test = line ? line+' '+w : w;
+        if (ctx.measureText(test).width > maxWidth){ if(line) lines.push(line); line=w; }
+        else { line=test; }
       }
-      if (line) lines.push(line);
-      const offset = ((lines.length - 1) * lineHeight) / 2;
-      lines.forEach((l, i) => ctx.fillText(l, maxWidth, i * lineHeight - offset));
+      if(line) lines.push(line);
+      const offset=((lines.length-1)*lineHeight)/2;
+      lines.forEach((l,i)=> ctx.fillText(l, maxWidth, i*lineHeight - offset));
     }
 
-    function indexUnderPointer() {
-      if (gages.length === 0) return -1;
-      const arc = (Math.PI * 2) / gages.length;
-      // La flèche pointe vers ANGLE  -π/2  (haut). On veut savoir quelle tranche couvre cet angle.
-      // On convertit l’angle courant en un index de tranche.
-      let theta = (-Math.PI / 2 - angle) % (Math.PI * 2);
-      if (theta < 0) theta += Math.PI * 2;
+    // Index du secteur sous la FLÈCHE EN BAS (angle de référence = +π/2)
+    function indexUnderPointerBottom(){
+      if (gages.length===0) return -1;
+      const arc = (Math.PI*2)/gages.length;
+      let theta = (Math.PI/2 - angle) % (Math.PI*2); // flèche en bas
+      if (theta < 0) theta += Math.PI*2;
       const idx = Math.floor(theta / arc);
       return (idx + gages.length) % gages.length;
     }
 
-    // ===== Contrôles & spin =====
+    // ===== Contrôles =====
     const spinBtn = document.getElementById('spin');
     const removeOnPick = document.getElementById('removeOnPick');
     const shuffleBtn = document.getElementById('shuffleBtn');
@@ -321,79 +240,67 @@ Un shot 🔥
     const applyBtn = document.getElementById('applyBtn');
     const gagesInput = document.getElementById('gagesInput');
 
-    function spin() {
-      if (spinning || gages.length === 0) return;
+    function spin(){
+      if (spinning || gages.length===0) return;
       spinning = true;
       spinBtn.disabled = true;
+      // On LAISSE le résultat courant affiché jusqu’à la fin -> remplacé seulement quand ça s’arrête
 
-      // Lente et fluide (6.2s, easing quint)
-      const turns = Math.random() * 3 + 6; // 6 à 9 tours
-      const target = angle + turns * 2 * Math.PI;
-      const duration = 6200;
+      const turns = Math.random()*3 + 6; // 6 à 9 tours
+      const target = angle + turns*2*Math.PI;
+      const duration = 6200; // ms
       let startTs = null;
 
-      function easeOutQuint(t) { return 1 - Math.pow(1 - t, 5); }
+      function easeOutQuint(t){ return 1 - Math.pow(1 - t, 5); }
 
-      function animate(ts) {
+      function animate(ts){
         if (!startTs) startTs = ts;
-        let t = (ts - startTs) / duration;
-        if (t > 1) t = 1;
-        const eased = easeOutQuint(t);
-        angle = target * eased;
-
+        let t = (ts - startTs)/duration; if (t>1) t=1;
+        angle = target * easeOutQuint(t);
         drawWheel();
-
-        if (t < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          finishSpin();
-        }
+        if (t<1) requestAnimationFrame(animate);
+        else finishSpin();
       }
       requestAnimationFrame(animate);
     }
 
-    function finishSpin() {
-      const idx = indexUnderPointer();
+    function finishSpin(){
+      const idx = indexUnderPointerBottom();
       const choice = gages[idx];
-      if (choice) {
+      if (choice){
         resultDiv.textContent = "🎯 Gage tiré : " + choice;
-        if (removeOnPick.checked) {
-          gages.splice(idx, 1);
-        }
+        if (removeOnPick.checked){ gages.splice(idx,1); }
       }
       spinning = false;
-      spinBtn.disabled = gages.length === 0;
+      spinBtn.disabled = (gages.length===0);
       drawWheel();
     }
 
-    function shuffleWheel() {
-      for (let i = gages.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+    function shuffleWheel(){
+      for (let i=gages.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
         [gages[i], gages[j]] = [gages[j], gages[i]];
       }
       drawWheel();
     }
 
-    function resetWheel() {
+    function resetWheel(){
       gages = [...gagesBase];
-      resultDiv.textContent = "";
       angle = 0;
       drawWheel();
-      spinBtn.disabled = gages.length === 0;
+      spinBtn.disabled = (gages.length===0);
+      // On NE vide PAS le résultat : il reste jusqu’à la prochaine rotation (comme demandé)
     }
 
-    function applyGages() {
-      const lines = gagesInput.value
-        .split(/\r?\n/)
-        .map(s => s.trim())
-        .filter(Boolean);
-      if (lines.length) {
+    function applyGages(){
+      const lines = gagesInput.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      if (lines.length){
         gagesBase = [...lines];
         gages = [...gagesBase];
-        resultDiv.textContent = "";
         angle = 0;
         drawWheel();
         spinBtn.disabled = false;
+        // On ne vide pas le résultat, il sera remplacé au prochain arrêt
       }
     }
 
@@ -402,10 +309,6 @@ Un shot 🔥
     shuffleBtn.addEventListener('click', shuffleWheel);
     resetBtn.addEventListener('click', resetWheel);
     applyBtn.addEventListener('click', applyGages);
-
-    // Init
-    // Déclenché par ResizeObserver → dimension réelle du canvas + premier draw
-    // (aucun appel direct nécessaire ici)
   </script>
 </body>
 </html>
