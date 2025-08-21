@@ -5,7 +5,7 @@
   <title>La Kaz à Fête !</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Styles globaux éventuels de ton site -->
+  <!-- Styles globaux -->
   <link rel="stylesheet" href="style.css">
   <!-- Polices : Pacifico pour le titre, Orbitron pour les chiffres -->
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Orbitron&display=swap" rel="stylesheet">
@@ -75,7 +75,7 @@
 
     /* ==== Tête qui se balance ==== */
     .swing-head {
-      width: 180px;
+      width: 120px;
       margin: 1rem auto 0;
       cursor: pointer;
       display: block;
@@ -129,7 +129,7 @@
       .countdown-card { min-width: 50px; padding: 0.75rem; }
       .countdown-card .value { font-size: 1.5rem; }
       .countdown-teaser { font-size: 1.2rem; }
-      .swing-head { width: 150px; }
+      .swing-head { width: 100px; }
     }
   </style>
 </head>
@@ -147,9 +147,6 @@
   <main>
     <section class="hero">
       <h2>Bienvenue au week-end le plus fun de l’été</h2>
-
-      <!-- Tête qui se balance (utilise ton image des têtes) -->
-      <img src="tetes.png" alt="Les têtes" class="swing-head" id="head">
 
       <!-- CTA -->
       <div class="cta-buttons">
@@ -177,6 +174,10 @@
           <div class="label">Secondes</div>
         </div>
       </div>
+
+      <!-- Tête qui se balance (sous le compteur) -->
+      <img src="tetes.png" alt="Les têtes" class="swing-head" id="head">
+
     </section>
   </main>
 
@@ -246,7 +247,6 @@
 
       head.addEventListener('click', () => {
         overlay.style.display = 'flex';
-        // petit délai pour déclencher la transition CSS
         setTimeout(() => overlay.classList.add('show'), 10);
       });
 
@@ -255,7 +255,7 @@
         setTimeout(() => overlay.style.display = 'none', 280);
       }
 
-      // Fermer avec la croix, avec la touche ESC, ou en cliquant le fond
+      // Fermer overlay
       closeBtn.addEventListener('click', closeOverlay);
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) closeOverlay();
