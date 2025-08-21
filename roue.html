@@ -1,406 +1,200 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<title>Roue des Gages — La Kaz à Fête !</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-<style>
-  :root{
-    /* Pastels doux & thème */
-    --p1:#FFE3EC; --p2:#FFF3C4; --p3:#D6F4FF; --p4:#E8F8EA;
-    --p5:#FDE2E4; --p6:#E7E6FF; --p7:#FBE7C6; --p8:#E4F1F7;
-    --primary:#5a189a;
-  }
-  .wrap{max-width:980px;margin:0 auto;padding:1rem;text-align:center}
-  h1{font-family:'Pacifico',cursive;color:#f72585;margin:.5rem 0 .25rem;text-shadow:1px 1px 4px rgba(0,0,0,.12)}
-  .sub{opacity:.9;margin-bottom:.75rem}
+  <meta charset="UTF-8">
+  <title>Roue des Gages 🎡</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #fdfbfb, #ebedee);
+      text-align: center;
+      padding: 20px;
+    }
 
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-  @media(max-width:900px){ .grid{grid-template-columns:1fr} }
+    h1 {
+      color: #6F42C1;
+      margin-bottom: 1rem;
+    }
 
-  /* Cartes */
-  .card,.panel{background:rgba(255,255,255,.2);backdrop-filter:saturate(120%) blur(2px);box-shadow:0 8px 18px rgba(0,0,0,.12);border-radius:16px;padding:14px}
-  .panel{text-align:left}
-  .panel h3{margin:.25rem 0 .5rem;color:#3a0842}
+    .wheel-container {
+      position: relative;
+      margin: 0 auto;
+      width: 400px;
+      height: 400px;
+    }
 
-  /* Zone roue */
-  .stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px}
-  #wheel{width:100%;max-width:460px;aspect-ratio:1;border-radius:50%;background:linear-gradient(145deg,rgba(255,255,255,.35),rgba(255,255,255,.15));box-shadow:0 14px 30px rgba(0,0,0,.18), inset 0 4px 12px rgba(255,255,255,.35)}
-  .pointer{
-    position:absolute;top:-6px;left:50%;transform:translateX(-50%);
-    width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:28px solid #111;border-radius:3px;
-    filter:drop-shadow(0 3px 6px rgba(0,0,0,.35));
-    transition: transform .08s ease;
-  }
-  .pointer.tick{ transform:translateX(-50%) translateY(-1px); } /* petit "tick" visuel */
+    canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
 
-  .controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-  .btn{background:var(--primary);color:#fff;border:none;border-radius:10px;padding:.6rem .95rem;font-weight:800;cursor:pointer}
-  .btn:disabled{opacity:.6;cursor:not-allowed}
-  .ghost{background:transparent;border:2px solid var(--primary);color:var(--primary)}
-  .ok{background:#2ca58d}
+    .spin-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 15px 25px;
+      border: none;
+      border-radius: 50%;
+      background: #6F42C1;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
 
-  /* Gestions gages */
-  .row{display:flex;gap:8px;align-items:center}
-  .row input{flex:1;padding:.58rem .75rem;border-radius:10px;border:1px solid rgba(0,0,0,.15);font-weight:600}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-  .chip{display:flex;align-items:center;gap:6px;background:#fff;color:#3a0842;border-radius:999px;padding:.35rem .7rem;box-shadow:0 2px 6px rgba(0,0,0,.12)}
-  .chip button{background:transparent;border:none;color:#E74C3C;cursor:pointer;font-weight:900}
+    .spin-btn:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+      background: #8b5cf6;
+    }
 
-  .empty{opacity:.85;margin-top:10px}
+    .controls {
+      margin-top: 20px;
+    }
 
-  /* Modale résultat */
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:999}
-  .modal.show{display:flex}
-  .modal .box{max-width:560px;margin:20px;background:#fff;border-radius:16px;padding:18px;text-align:center;box-shadow:0 12px 28px rgba(0,0,0,.3)}
-  .result{font-size:1.5rem;font-weight:900;color:var(--primary);margin:.5rem 0 1rem}
+    .result {
+      margin-top: 20px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #E74C3C;
+    }
 
-  /* Légende de sélection en live sous la roue */
-  .live-label{margin-top:6px;font-weight:900;color:#3a0842;background:rgba(255,255,255,.65);padding:.25rem .6rem;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
-</style>
+    label {
+      display: block;
+      margin: 10px 0;
+      font-size: 0.9rem;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
+  <h1>🎡 Roue des Gages 🎉</h1>
 
-<a href="index.html" class="back-btn">← Accueil</a>
-
-<div class="wrap">
-  <h1>Roue des Gages</h1>
-  <div class="sub">Design pastel 🌴 — rotation plus lente 🐢 — gage tiré retiré automatiquement.</div>
-
-  <div class="grid">
-    <!-- Roue -->
-    <section class="card">
-      <div class="stage">
-        <div class="pointer" id="pointer"></div>
-        <canvas id="wheel" width="620" height="620" aria-label="Roue des gages"></canvas>
-        <div id="liveLabel" class="live-label" style="display:none;">—</div>
-        <div id="emptyNote" class="empty" style="display:none;">Aucun gage dans la roue. Ajoute-en à droite, ou clique “Repartir de zéro”.</div>
-        <div class="controls">
-          <button id="spinBtn" class="btn">🎡 Tourner</button>
-          <button id="shuffleBtn" class="btn ghost" title="Mélanger l'ordre">🔀 Mélanger</button>
-          <button id="resetBtn" class="btn ok" title="Repartir de zéro (liste par défaut)">♻️ Repartir de zéro</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Configuration -->
-    <section class="panel">
-      <h3>Gages</h3>
-      <div class="row">
-        <input id="newItem" type="text" placeholder="Ex: Danse du robot pendant 30s">
-        <button id="addBtn" class="btn">+ Ajouter</button>
-      </div>
-      <div class="chips" id="chips"></div>
-    </section>
+  <div class="wheel-container">
+    <canvas id="wheel" width="400" height="400"></canvas>
+    <button class="spin-btn" id="spin">Tourner</button>
   </div>
-</div>
 
-<!-- Modale résultat -->
-<div id="modal" class="modal" role="dialog" aria-modal="true">
-  <div class="box">
-    <div style="font-size:2rem">🎉</div>
-    <div>Le gage tiré est :</div>
-    <div id="result" class="result">—</div>
-    <div class="controls" style="justify-content:center">
-      <button id="againBtn" class="btn">Rejouer</button>
-      <button id="closeModalBtn" class="btn ghost">Fermer</button>
-    </div>
+  <div class="controls">
+    <label>
+      <input type="checkbox" id="removeOnPick" checked>
+      Retirer automatiquement le gage tiré
+    </label>
+    <button onclick="resetWheel()">🔄 Repartir de zéro</button>
+    <button onclick="shuffleWheel()">🎲 Mélanger</button>
   </div>
-</div>
 
-<!-- Confettis (optionnel) -->
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <div class="result" id="result"></div>
 
-<script>
-/* ===== Données & persistance ===== */
-const DEFAULT_ITEMS = [
-  'Shot eau de coco',
-  'Danse 30s',
-  'Compliment à la personne de ton choix',
-  'Chanter un zouk',
-  'Faire 10 pompes',
-  'Raconter une blague',
-  'Parler créole 1 min',
-  'Selfie avec 3 personnes',
-];
-const LS_ITEMS = 'wheel_items_pastel_v2';
+  <script>
+    const canvas = document.getElementById('wheel');
+    const ctx = canvas.getContext('2d');
+    const resultDiv = document.getElementById('result');
+    const removeOnPick = document.getElementById('removeOnPick');
 
-let items = JSON.parse(localStorage.getItem(LS_ITEMS) || '[]');
-if (!Array.isArray(items) || items.length === 0) {
-  items = [...DEFAULT_ITEMS];
-  save();
-}
+    let gagesBase = [
+      "Chante une chanson 🎤",
+      "Danse 30 sec 💃",
+      "Fais un compliment 💖",
+      "Imite quelqu’un 🤪",
+      "Dis une blague 😂",
+      "Selfie collectif 🤳",
+      "Un shot 🔥",
+      "10 pompes 💪"
+    ];
+    let gages = [...gagesBase];
 
-/* ===== DOM ===== */
-const canvas = document.getElementById('wheel');
-const ctx = canvas.getContext('2d');
-const spinBtn = document.getElementById('spinBtn');
-const shuffleBtn = document.getElementById('shuffleBtn');
-const resetBtn = document.getElementById('resetBtn');
-const emptyNote = document.getElementById('emptyNote');
-const liveLabel = document.getElementById('liveLabel');
-const pointer = document.getElementById('pointer');
+    const colors = [
+      "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9",
+      "#BAE1FF", "#E7BAFF", "#FFD6E8", "#BFFCC6",
+      "#FFFFD1", "#FFABAB", "#FFC3A0", "#D5AAFF",
+      "#85E3FF", "#B9FBC0", "#C7CEEA", "#FFDAC1"
+    ];
 
-const chips = document.getElementById('chips');
-const newItem = document.getElementById('newItem');
-const addBtn = document.getElementById('addBtn');
+    let angle = 0;
+    let spinning = false;
 
-const modal = document.getElementById('modal');
-const resultEl = document.getElementById('result');
-const againBtn = document.getElementById('againBtn');
-const closeModalBtn = document.getElementById('closeModalBtn');
+    function drawWheel() {
+      const radius = canvas.width / 2;
+      const arc = 2 * Math.PI / gages.length;
 
-/* ===== Utils ===== */
-const pastel = ['#FFE3EC','#FFF3C4','#D6F4FF','#E8F8EA','#FDE2E4','#E7E6FF','#FBE7C6','#E4F1F7'];
-function save(){ localStorage.setItem(LS_ITEMS, JSON.stringify(items)); }
-function rand(min,max){ return Math.random()*(max-min)+min; }
-function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-/* ===== Rendu chips ===== */
-function renderChips(){
-  chips.innerHTML = '';
-  items.forEach((text, idx)=>{
-    const div = document.createElement('div');
-    div.className = 'chip';
-    div.innerHTML = `<span>${text}</span><button title="Supprimer">×</button>`;
-    div.querySelector('button').onclick = ()=>{
-      items.splice(idx,1);
-      save(); drawWheel(); renderChips(); updateEmpty();
-    };
-    chips.appendChild(div);
-  });
-}
+      gages.forEach((gage, i) => {
+        const start = angle + i * arc;
+        ctx.beginPath();
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius, start, start + arc);
+        ctx.lineTo(radius, radius);
+        ctx.fill();
 
-/* ===== Roue ===== */
-let angle = 0;           // degrés
-let spinning = false;
-let lastLiveIndex = -1;  // pour le "tick" visuel de la pointe
-
-function drawWheel(){
-  const n = Math.max(1, items.length);
-  const cx = canvas.width/2, cy = canvas.height/2, r = Math.min(cx,cy)-10;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  // anneau externe
-  ctx.beginPath();
-  ctx.arc(cx,cy,r,0,Math.PI*2);
-  ctx.lineWidth = 6;
-  ctx.strokeStyle = 'rgba(0,0,0,.25)';
-  ctx.stroke();
-
-  const slice = 360/n;
-  const start = -90 + angle; // pointe en haut
-
-  // dessiner secteurs
-  for(let i=0;i<n;i++){
-    const a1 = (start + i*slice) * Math.PI/180;
-    const a2 = (start + (i+1)*slice) * Math.PI/180;
-
-    // secteur fond
-    const grad = ctx.createRadialGradient(cx,cy,r*0.2, cx,cy,r);
-    grad.addColorStop(0, 'rgba(255,255,255,.85)');
-    grad.addColorStop(1, pastel[i % pastel.length]);
-
-    ctx.beginPath();
-    ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,r-6,a1,a2);
-    ctx.closePath();
-    ctx.fillStyle = grad;
-    ctx.fill();
-
-    // séparateurs
-    ctx.beginPath();
-    ctx.moveTo(cx,cy);
-    ctx.lineTo(cx + (r-6)*Math.cos(a1), cy + (r-6)*Math.sin(a1));
-    ctx.strokeStyle = 'rgba(0,0,0,.12)';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // texte
-    ctx.save();
-    ctx.translate(cx,cy);
-    const mid = (a1+a2)/2;
-    ctx.rotate(mid);
-    ctx.textAlign = 'right';
-    ctx.fillStyle = '#222';
-    ctx.font = 'bold 18px sans-serif';
-    ctx.shadowColor = 'rgba(255,255,255,.6)';
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetY = 2;
-    const label = items[i] || '';
-    wrapText(ctx, label, r-20, 22);
-    ctx.restore();
-  }
-
-  // centre
-  ctx.beginPath();
-  ctx.arc(cx,cy,48,0,Math.PI*2);
-  ctx.fillStyle = 'rgba(255,255,255,.95)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(0,0,0,.12)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.fillStyle = '#5a189a';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('La Kaz', cx, cy-2);
-  ctx.fillText('à Fête', cx, cy+14);
-
-  // highlight en temps réel du secteur pointé
-  if (items.length > 0){
-    const idx = currentIndexUnderPointer();
-    if (idx >= 0){
-      const a1 = (start + idx*slice) * Math.PI/180;
-      const a2 = (start + (idx+1)*slice) * Math.PI/180;
-      ctx.beginPath();
-      ctx.moveTo(cx,cy);
-      ctx.arc(cx,cy,r-6,a1,a2);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(255,255,255,.18)';
-      ctx.fill();
+        ctx.save();
+        ctx.translate(radius, radius);
+        ctx.rotate(start + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#333";
+        ctx.font = "bold 16px Arial";
+        ctx.fillText(gage, radius - 10, 5);
+        ctx.restore();
+      });
     }
-  }
-}
 
-function wrapText(ctx, text, x, lineHeight){
-  const words = String(text).split(' ');
-  let line = '';
-  const lines = [];
-  words.forEach(w=>{
-    const test = line ? line+' '+w : w;
-    if (ctx.measureText(test).width > (x-24)) {
-      if (line) lines.push(line);
-      line = w;
-    } else {
-      line = test;
-    }
-  });
-  if(line) lines.push(line);
-  const offset = (lines.length-1)*lineHeight/2;
-  lines.forEach((l,i)=> ctx.fillText(l, x, i*lineHeight - offset));
-}
+    function spinWheel() {
+      if (spinning || gages.length === 0) return;
+      spinning = true;
+      let spins = Math.random() * 3 + 4; // 4 à 7 tours
+      let target = angle + spins * 2 * Math.PI;
+      let duration = 5000; // 5 secondes
+      let start = null;
 
-/* index du secteur sous la pointe (haut) */
-function currentIndexUnderPointer(){
-  if (items.length === 0) return -1;
-  const n = items.length;
-  const slice = 360/n;
-  const norm = ((angle % 360) + 360) % 360;
-  const raw = Math.floor(((360 - norm) % 360) / slice);
-  return (raw + n) % n;
-}
-
-/* ===== Spin & retrait auto ===== */
-function spin(){
-  if (spinning || items.length===0) return;
-  spinning = true;
-  spinBtn.disabled = true;
-
-  // plus lent : durée plus longue + plus de tours
-  const extraTurns = rand(6, 9);  // tours complets
-  const finalAngle = rand(0, 360);
-  const target = angle + extraTurns*360 + finalAngle;
-
-  const startTime = performance.now();
-  const duration = 6500; // ms (plus lent)
-  function easeOutQuint(t){ return 1 - Math.pow(1 - t, 5); }
-  function lerp(a,b,t){ return a + (b-a)*t; }
-
-  function animate(now){
-    const t = Math.min(1, (now - startTime)/duration);
-    angle = lerp(angle, target, easeOutQuint(t));
-
-    // live label + tick visuel
-    const idx = currentIndexUnderPointer();
-    if (idx !== lastLiveIndex){
-      lastLiveIndex = idx;
-      pointer.classList.remove('tick'); // reflow trick
-      void pointer.offsetWidth;
-      pointer.classList.add('tick');
-
-      if (items[idx]){
-        liveLabel.style.display = 'inline-block';
-        liveLabel.textContent = items[idx];
+      function animate(ts) {
+        if (!start) start = ts;
+        let progress = (ts - start) / duration;
+        if (progress > 1) progress = 1;
+        let ease = 1 - Math.pow(1 - progress, 3); // easing cubic
+        angle = target * ease;
+        drawWheel();
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          finishSpin();
+        }
       }
+      requestAnimationFrame(animate);
+    }
+
+    function finishSpin() {
+      const arc = 2 * Math.PI / gages.length;
+      let selected = Math.floor(((2 * Math.PI - angle % (2 * Math.PI)) % (2 * Math.PI)) / arc);
+      const gage = gages[selected];
+      resultDiv.textContent = "🎯 Gage tiré : " + gage;
+      if (removeOnPick.checked) {
+        gages.splice(selected, 1);
+      }
+      spinning = false;
+      drawWheel();
+    }
+
+    function resetWheel() {
+      gages = [...gagesBase];
+      resultDiv.textContent = "";
+      drawWheel();
+    }
+
+    function shuffleWheel() {
+      gages.sort(() => Math.random() - 0.5);
+      drawWheel();
     }
 
     drawWheel();
-    if (t < 1) requestAnimationFrame(animate);
-    else { angle = target % 360; onSpinEnd(); }
-  }
-  requestAnimationFrame(animate);
-}
-
-function onSpinEnd(){
-  const idx = currentIndexUnderPointer();
-  const chosen = items[idx];
-  if (chosen){
-    showResult(chosen);
-
-    // Retire le gage tiré de la roue
-    items.splice(idx, 1);
-    save();
-    drawWheel();
-    renderChips();
-    updateEmpty();
-
-    // confettis 🎉
-    try { confetti({ particleCount: 120, spread: 70, origin: { y: .6 } }); } catch(e){}
-  }
-
-  liveLabel.style.display = items.length ? 'inline-block' : 'none';
-  spinning = false;
-  spinBtn.disabled = items.length === 0;
-}
-
-/* ===== UI ===== */
-function updateEmpty(){
-  const empty = items.length === 0;
-  emptyNote.style.display = empty ? 'block' : 'none';
-  spinBtn.disabled = empty;
-  liveLabel.style.display = empty ? 'none' : 'inline-block';
-  if (!empty && items[ currentIndexUnderPointer() ]) {
-    liveLabel.textContent = items[currentIndexUnderPointer()];
-  }
-}
-
-spinBtn.onclick = spin;
-shuffleBtn.onclick = ()=>{ shuffle(items); save(); drawWheel(); renderChips(); updateEmpty(); };
-resetBtn.onclick = ()=>{
-  if (!confirm('Repartir de zéro avec la liste par défaut ?')) return;
-  items = [...DEFAULT_ITEMS];
-  angle = 0;
-  save(); drawWheel(); renderChips(); updateEmpty();
-};
-
-addBtn.onclick = ()=>{
-  const t = (newItem.value || '').trim();
-  if (!t) return;
-  items.push(t);
-  newItem.value = '';
-  save(); drawWheel(); renderChips(); updateEmpty();
-};
-newItem.addEventListener('keydown', e=>{ if(e.key==='Enter') addBtn.click(); });
-
-/* ===== Modale résultat ===== */
-function showResult(text){
-  resultEl.textContent = text;
-  modal.classList.add('show');
-}
-againBtn.onclick = ()=>{ modal.classList.remove('show'); spin(); };
-closeModalBtn.onclick = ()=>{ modal.classList.remove('show'); };
-modal.addEventListener('click', e=>{ if(e.target===modal) modal.classList.remove('show'); });
-document.addEventListener('keydown', e=>{
-  if (e.key==='Escape') modal.classList.remove('show');
-});
-
-/* ===== Init ===== */
-renderChips();
-drawWheel();
-updateEmpty();
-</script>
+    document.getElementById('spin').addEventListener('click', spinWheel);
+  </script>
 </body>
 </html>
