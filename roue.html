@@ -14,7 +14,7 @@
     }
     h1{ color:var(--primary); margin:8px 0 8px; }
 
-    /* Résultat entre le titre et la roue */
+    /* Résultat sous le titre (persiste jusqu’au prochain spin) */
     .result{
       font-size:1.15rem; font-weight:800; color:#E74C3C;
       min-height:1.6em; margin:6px 0 12px;
@@ -33,7 +33,7 @@
       position:absolute; bottom:-8px; left:50%; transform:translateX(-50%) rotate(180deg);
       width:0; height:0;
       border-left:16px solid transparent; border-right:16px solid transparent;
-      border-bottom:28px solid #111; /* triangle vers le bas (après rotation: vers le haut visuel) */
+      border-bottom:28px solid #111;
       filter:drop-shadow(0 3px 6px rgba(0,0,0,.35)); z-index:3;
     }
 
@@ -49,6 +49,17 @@
     .spin-btn:hover{ transform:scale(1.04); filter:brightness(1.05); }
     .spin-btn:active{ transform:scale(.98); }
     .spin-btn:disabled{ opacity:.65; cursor:not-allowed; }
+
+    /* Badge résultat SUR la roue (apparait à la fin, disparaît au prochain spin) */
+    .result-on-wheel{
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      max-width:78%; padding:.5rem .75rem; border-radius:999px;
+      background:rgba(0,0,0,.75); color:#fff; font-weight:900; font-size:clamp(.9rem,3.4vw,1.05rem);
+      text-wrap:pretty; box-shadow:0 8px 16px rgba(0,0,0,.35);
+      opacity:0; pointer-events:none; transition:opacity .2s ease;
+      z-index:2; /* au-dessus du canvas, en dessous du bouton */
+    }
+    .result-on-wheel.show{ opacity:1; }
 
     .controls,.options{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:10px 0; }
     .btn{ background:var(--primary); color:#fff; border:none; border-radius:10px; padding:.55rem .9rem; font-weight:800; cursor:pointer; }
@@ -71,13 +82,17 @@
 <body>
   <h1>🎡 Roue des Gages 🎉</h1>
 
-  <!-- Résultat persistant (jusqu’au prochain clic sur “Tourner”) -->
+  <!-- Résultat persistant sous le titre -->
   <div class="result" id="result"></div>
 
   <!-- ROUE -->
   <div class="wheel-wrap">
     <div class="pointer"></div>
     <canvas id="wheel"></canvas>
+
+    <!-- Badge résultat SUR la roue -->
+    <div id="wheelBadge" class="result-on-wheel"></div>
+
     <div class="spin-center">
       <button class="spin-btn" id="spin">Tourner</button>
     </div>
@@ -237,6 +252,7 @@ Un shot 🔥
     const shuffleBtn = document.getElementById('shuffleBtn');
     const resetBtn = document.getElementById('resetBtn');
     const resultDiv = document.getElementById('result');
+    const wheelBadge = document.getElementById('wheelBadge');
     const applyBtn = document.getElementById('applyBtn');
     const gagesInput = document.getElementById('gagesInput');
 
@@ -244,7 +260,9 @@ Un shot 🔥
       if (spinning || gages.length===0) return;
       spinning = true;
       spinBtn.disabled = true;
-      // On LAISSE le résultat courant affiché jusqu’à la fin -> remplacé seulement quand ça s’arrête
+
+      // Masquer le badge SUR la roue au démarrage
+      wheelBadge.classList.remove('show');
 
       const turns = Math.random()*3 + 6; // 6 à 9 tours
       const target = angle + turns*2*Math.PI;
@@ -268,7 +286,14 @@ Un shot 🔥
       const idx = indexUnderPointerBottom();
       const choice = gages[idx];
       if (choice){
+        // Résultat sous le titre (reste visible jusqu’au prochain spin)
         resultDiv.textContent = "🎯 Gage tiré : " + choice;
+
+        // Badge SUR la roue (reste jusqu’au prochain spin)
+        wheelBadge.textContent = choice;
+        wheelBadge.classList.add('show');
+
+        // Option : retirer le gage tiré
         if (removeOnPick.checked){ gages.splice(idx,1); }
       }
       spinning = false;
@@ -289,7 +314,7 @@ Un shot 🔥
       angle = 0;
       drawWheel();
       spinBtn.disabled = (gages.length===0);
-      // On NE vide PAS le résultat : il reste jusqu’à la prochaine rotation (comme demandé)
+      // On ne vide pas resultDiv ni le badge; ils seront remplacés au prochain arrêt
     }
 
     function applyGages(){
@@ -300,7 +325,7 @@ Un shot 🔥
         angle = 0;
         drawWheel();
         spinBtn.disabled = false;
-        // On ne vide pas le résultat, il sera remplacé au prochain arrêt
+        // On conserve l’affichage courant; il changera au prochain tirage
       }
     }
 
