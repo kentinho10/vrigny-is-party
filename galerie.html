@@ -19,22 +19,27 @@
   #status { margin:.75rem auto; max-width:900px; font-size:.95rem; color:#6F42C1; }
 
   .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:15px; margin-top:1rem; }
-  .gallery-item { background:#fff; padding:6px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.2); text-align:left; }
-  .gallery-item img { width:100%; height:200px; object-fit:cover; border-radius:6px; cursor:pointer; }
-  .btn-container { margin-top:6px; display:flex; gap:6px; }
-  .download-btn, .delete-btn { flex:1; padding:.3rem .5rem; font-size:.8rem; border:none; border-radius:5px; cursor:pointer; font-weight:600; text-align:center; }
+  .gallery-item { background:#fff; padding:8px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,.18); text-align:left; }
+  .gallery-item img { width:100%; height:220px; object-fit:cover; border-radius:8px; cursor:pointer; }
+  .btn-container { margin-top:8px; display:flex; gap:8px; }
+  .download-btn, .delete-btn { flex:1; padding:.35rem .6rem; font-size:.85rem; border:none; border-radius:6px; cursor:pointer; font-weight:600; text-align:center; }
   .download-btn { background:#FFD700; color:#111; text-decoration:none; }
   .delete-btn { background:#E74C3C; color:#fff; }
 
-  .likes-comments { margin-top:8px; }
-  .like-btn { background:none; border:none; cursor:pointer; font-size:1.2rem; }
-  .comments { margin-top:6px; max-height:150px; overflow-y:auto; font-size:.85rem; }
-  .comment { margin:3px 0; padding:3px 5px; background:#f1f1f1; border-radius:5px; }
-  .comment strong { color:#6F42C1; }
-  .comment-input { width:70%; padding:4px; border:1px solid #ccc; border-radius:5px; }
-  .comment-btn { padding:4px 8px; background:#6F42C1; color:#fff; border:none; border-radius:5px; cursor:pointer; font-size:.8rem; }
+  .likes-comments { margin-top:10px; }
+  .like-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .like-btn { background:none; border:1px solid #eee; padding:.25rem .6rem; border-radius:999px; cursor:pointer; font-size:1rem; }
+  .like-count { font-weight:700; }
+  .likers { font-size:.85rem; color:#555; margin-top:4px; }
+  .likers strong { color:#6F42C1; }
 
-  .back-btn { display:block; margin:1rem auto; padding:.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:5px; width:120px; }
+  .comments { margin-top:8px; max-height:160px; overflow-y:auto; font-size:.9rem; }
+  .comment { margin:4px 0; padding:4px 6px; background:#f7f7f7; border-radius:6px; }
+  .comment strong { color:#6F42C1; }
+  .comment-input { width:70%; padding:6px; border:1px solid #ccc; border-radius:6px; }
+  .comment-btn { padding:6px 10px; background:#6F42C1; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:.85rem; }
+
+  .back-btn { display:block; margin:1rem auto; padding:.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:6px; width:130px; }
   .toolbar { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:.5rem; }
 
   /* Lightbox plein écran */
@@ -44,13 +49,27 @@
     display:none; justify-content:center; align-items:center;
     z-index:1000; flex-direction:column; color:#fff; padding:20px;
   }
-  #lightbox img { max-width:90%; max-height:50%; border-radius:8px; box-shadow:0 0 20px #000; }
+  #lightbox img { max-width:92%; max-height:55%; border-radius:10px; box-shadow:0 0 20px #000; }
   .nav-btn { position:absolute; top:50%; transform:translateY(-50%); font-size:3rem; color:white; cursor:pointer; user-select:none; padding:0 15px; }
   .nav-btn:hover { color:#FFD700; }
   .nav-left { left:10px; } .nav-right { right:10px; }
-  .close-btn { position:absolute; top:15px; right:20px; font-size:2.5rem; color:white; cursor:pointer; }
-  .close-btn:hover { color:#E74C3C; }
-  #lightbox .likes-comments { width:90%; margin-top:15px; text-align:left; }
+
+  /* CROIX visible & cliquable (meilleure access sur mobile) */
+  .close-btn {
+    position:absolute; top:10px; right:10px;
+    width:44px; height:44px; line-height:44px; text-align:center;
+    border-radius:999px;
+    background: rgba(0,0,0,0.6);
+    box-shadow: 0 2px 8px rgba(0,0,0,.4);
+    font-size:28px; font-weight:700; color:#fff; cursor:pointer;
+  }
+  .close-btn:active { transform: scale(0.96); }
+  @media (max-width: 480px){
+    .close-btn { top:8px; right:8px; }
+  }
+
+  #lightbox .likes-comments { width:92%; max-width:820px; margin-top:14px; text-align:left; }
+  #lightbox .likers { color:#ddd; }
 </style>
 </head>
 <body>
@@ -69,11 +88,14 @@
 
 <!-- Lightbox -->
 <div id="lightbox">
-  <span class="close-btn">&times;</span>
-  <span class="nav-btn nav-left">&#10094;</span>
+  <span class="close-btn" title="Fermer">×</span>
+  <span class="nav-btn nav-left" title="Précédente">&#10094;</span>
   <img src="" alt="Zoom">
-  <span class="nav-btn nav-right">&#10095;</span>
-  <div class="likes-comments" id="lightboxDetails"></div>
+  <span class="nav-btn nav-right" title="Suivante">&#10095;</span>
+
+  <div class="likes-comments" id="lightboxDetails">
+    <!-- rempli dynamiquement -->
+  </div>
 </div>
 
 <!-- Firebase -->
@@ -125,7 +147,7 @@
       img.onload=()=>{
         const scale=Math.min(maxW/img.width,maxH/img.height,1);
         const c=document.createElement("canvas");
-        c.width=img.width*scale; c.height=img.height*scale;
+        c.width=Math.round(img.width*scale); c.height=Math.round(img.height*scale);
         c.getContext("2d").drawImage(img,0,0,c.width,c.height);
         res(c.toDataURL("image/jpeg",q));
       };
@@ -133,7 +155,7 @@
     });
   }
 
-  // Afficher une photo
+  // Afficher une photo (carte)
   function renderItem(key,data,index){
     const url=data.dataUrl, name=data.name||'photo';
     const div=document.createElement('div'); div.className='gallery-item';
@@ -144,31 +166,56 @@
         <button class="delete-btn">Supprimer</button>
       </div>
       <div class="likes-comments">
-        <button class="like-btn">❤️ <span class="like-count">0</span></button>
+        <div class="like-row">
+          <button class="like-btn">❤️ <span class="like-count">0</span></button>
+          <div class="likers"><strong>Aimé par :</strong> <span class="likers-list">Personne… encore 😉</span></div>
+        </div>
         <div class="comments"></div>
-        <input type="text" class="comment-input" placeholder="Ajouter un commentaire...">
-        <button class="comment-btn">Envoyer</button>
+        <div style="display:flex; gap:6px; margin-top:6px;">
+          <input type="text" class="comment-input" placeholder="Ajouter un commentaire...">
+          <button class="comment-btn">Envoyer</button>
+        </div>
       </div>
     `;
+
     // delete
-    div.querySelector('.delete-btn').onclick=()=>{ if(confirm("Supprimer ?")) db.ref("photos/"+key).remove(); };
-    // like
-    const likeBtn=div.querySelector('.like-btn'), likeCount=div.querySelector('.like-count');
+    div.querySelector('.delete-btn').onclick=()=>{ if(confirm("Supprimer cette photo pour tout le monde ?")) db.ref("photos/"+key).remove(); };
+
+    // likes (compteur + liste des pseudos)
+    const likeBtn=div.querySelector('.like-btn');
+    const likeCount=div.querySelector('.like-count');
+    const likersListEl=div.querySelector('.likers-list');
+
     db.ref("photos/"+key+"/likes").on("value",s=>{
-      const val=s.val()||{}; likeCount.textContent=Object.keys(val).length;
-      if(val[username]) likeBtn.style.color="red"; else likeBtn.style.color="black";
+      const likes=s.val()||{};
+      const names=Object.keys(likes);
+      likeCount.textContent = names.length;
+      likersListEl.textContent = names.length ? names.join(", ") : "Personne… encore 😉";
+      likeBtn.style.color = likes[username] ? "red" : "black";
     });
+
+    // cliquer = like (pas d'unlike ici)
     likeBtn.onclick=()=>{ db.ref("photos/"+key+"/likes/"+username).set(true); };
-    // comments
+
+    // comments (liste + ajout)
     const comDiv=div.querySelector('.comments');
     db.ref("photos/"+key+"/comments").on("value",s=>{
       comDiv.innerHTML=""; const val=s.val()||{};
-      Object.values(val).forEach(c=>{ comDiv.innerHTML+=`<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`; });
+      Object.values(val).forEach(c=>{
+        const el=document.createElement('div');
+        el.className="comment";
+        el.innerHTML = `<strong>${(c.user||"Invité")}:</strong> ${c.text||""}`;
+        comDiv.appendChild(el);
+      });
     });
     div.querySelector('.comment-btn').onclick=()=>{
       const inp=div.querySelector('.comment-input');
-      if(inp.value.trim()){ db.ref("photos/"+key+"/comments").push({user:username,text:inp.value}); inp.value=""; }
+      const text=inp.value.trim();
+      if(!text) return;
+      db.ref("photos/"+key+"/comments").push({user:String(username),text:String(text)});
+      inp.value="";
     };
+
     return div;
   }
 
@@ -183,42 +230,84 @@
   // upload
   upload.onclick=async()=>{
     const files=Array.from(input.files||[]); if(!files.length){ log("Choisis une photo"); return; }
-    for(const f of files){ const dataUrl=await compressImage(f); await db.ref("photos").push({dataUrl,name:f.name,createdAt:Date.now()}); }
+    for(const f of files){
+      const dataUrl=await compressImage(f);
+      await db.ref("photos").push({dataUrl,name:f.name,createdAt:Date.now()});
+    }
     input.value=""; log("Upload terminé ✅");
   };
 
   // lightbox
   gallery.onclick=(e)=>{ if(e.target.tagName==="IMG"){ currentIndex=parseInt(e.target.dataset.index); showImage(); } };
+
   function showImage(){
     const p=photos[currentIndex];
     lightboxImg.src=p.dataUrl; lightbox.style.display="flex";
-    // afficher détails (likes+commentaires)
-    lightboxDetails.innerHTML=`<h3>${p.name||"photo"}</h3>
-      <button id="lbLike">❤️</button> <span id="lbLikeCount">0</span>
-      <div id="lbComments"></div>
-      <input type="text" id="lbInput" placeholder="Ajouter un commentaire...">
-      <button id="lbSend">Envoyer</button>`;
-    // likes
-    const likeBtn=document.getElementById("lbLike"), likeCount=document.getElementById("lbLikeCount");
+
+    // Bloc détails (likes + liste des pseudos + commentaires + input)
+    lightboxDetails.innerHTML=`
+      <div class="like-row">
+        <button id="lbLike" class="like-btn">❤️</button>
+        <span id="lbLikeCount" class="like-count">0</span>
+        <div class="likers" id="lbLikers" style="margin-left:10px;"><strong>Aimé par :</strong> <span>Aucun</span></div>
+      </div>
+      <div id="lbComments" class="comments" style="color:#111; background:#fff; border-radius:8px; padding:8px; margin-top:8px;"></div>
+      <div style="display:flex; gap:6px; margin-top:8px;">
+        <input type="text" id="lbInput" class="comment-input" placeholder="Ajouter un commentaire...">
+        <button id="lbSend" class="comment-btn">Envoyer</button>
+      </div>
+    `;
+
+    const likeBtn=document.getElementById("lbLike"),
+          likeCount=document.getElementById("lbLikeCount"),
+          lbLikers=document.getElementById("lbLikers").querySelector('span');
+
+    // likes (compteur + liste pseudos)
     db.ref("photos/"+p.key+"/likes").on("value",s=>{
-      const val=s.val()||{}; likeCount.textContent=Object.keys(val).length;
-      likeBtn.style.color=val[username]?"red":"white";
+      const likes=s.val()||{};
+      const names=Object.keys(likes);
+      likeCount.textContent = names.length;
+      lbLikers.textContent = names.length ? names.join(", ") : "Aucun";
+      likeBtn.style.color = likes[username] ? "red" : "white";
     });
     likeBtn.onclick=()=>db.ref("photos/"+p.key+"/likes/"+username).set(true);
+
     // comments
     const comDiv=document.getElementById("lbComments");
     db.ref("photos/"+p.key+"/comments").on("value",s=>{
       comDiv.innerHTML=""; const val=s.val()||{};
-      Object.values(val).forEach(c=>{ comDiv.innerHTML+=`<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`; });
+      Object.values(val).forEach(c=>{
+        const el=document.createElement('div');
+        el.className="comment";
+        el.innerHTML = `<strong>${(c.user||"Invité")}:</strong> ${c.text||""}`;
+        comDiv.appendChild(el);
+      });
     });
     document.getElementById("lbSend").onclick=()=>{
       const inp=document.getElementById("lbInput");
-      if(inp.value.trim()){ db.ref("photos/"+p.key+"/comments").push({user:username,text:inp.value}); inp.value=""; }
+      const text=inp.value.trim();
+      if(!text) return;
+      db.ref("photos/"+p.key+"/comments").push({user:String(username),text:String(text)});
+      inp.value="";
     };
   }
+
+  // nav & close
   closeBtn.onclick=()=>lightbox.style.display="none";
   leftBtn.onclick=()=>{currentIndex=(currentIndex-1+photos.length)%photos.length;showImage();};
   rightBtn.onclick=()=>{currentIndex=(currentIndex+1)%photos.length;showImage();};
+
+  // fermer si clic fond noir
+  lightbox.addEventListener('click',(e)=>{ if(e.target===lightbox) lightbox.style.display="none"; });
+
+  // swipe mobile
+  let startX=0;
+  lightbox.addEventListener('touchstart',e=>{ startX=e.touches[0].clientX; });
+  lightbox.addEventListener('touchend',e=>{
+    let endX=e.changedTouches[0].clientX;
+    if(startX-endX>50) rightBtn.click();
+    if(endX-startX>50) leftBtn.click();
+  });
 </script>
 </body>
 </html>
