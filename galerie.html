@@ -18,46 +18,76 @@
   .hint { font-size:.9rem; color:#666; margin-top:.5rem; }
   #status { margin:.75rem auto; max-width:900px; font-size:.95rem; color:#6F42C1; }
 
-  .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; margin-top:1rem; }
-  .gallery-item { background:#fff; padding:8px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.2); display:flex; flex-direction:column; align-items:center; }
+  .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin-top:1rem; }
+  .gallery-item { background:#fff; padding:8px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.2); text-align:left; }
   .gallery-item img { width:100%; height:200px; object-fit:cover; border-radius:6px; cursor:pointer; }
-  
-  /* Interaction */
-  .actions { display:flex; gap:10px; align-items:center; margin-top:6px; }
-  .like-btn { background:none; border:none; cursor:pointer; font-size:1.4rem; }
-  .like-count { font-weight:bold; color:#E74C3C; }
-  .delete-btn { margin-left:auto; padding:3px 6px; background:#E74C3C; color:white; border:none; border-radius:4px; cursor:pointer; }
-
-  .comments { text-align:left; width:100%; max-height:100px; overflow-y:auto; margin-top:6px; font-size:.9rem; }
-  .comments p { margin:2px 0; }
-  .comment-input { display:flex; margin-top:6px; gap:4px; width:100%; }
-  .comment-input input { flex:1; padding:5px; border-radius:4px; border:1px solid #ccc; }
-  .comment-input button { padding:5px 8px; background:#FFD700; border:none; border-radius:4px; cursor:pointer; }
-
+  .btn-container { margin-top:6px; display:flex; gap:6px; }
+  .download-btn, .delete-btn, .like-btn { flex:1; padding:.3rem .5rem; font-size:.85rem; border:none; border-radius:5px; cursor:pointer; font-weight:600; text-decoration:none; text-align:center; }
+  .download-btn { background:#FFD700; color:#111; }
+  .delete-btn { background:#E74C3C; color:#fff; }
+  .like-btn { background:#ff4081; color:#fff; }
   .back-btn { display:block; margin:1rem auto; padding:.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:5px; width:120px; }
+  .toolbar { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:.5rem; }
+  .comments { margin-top:6px; font-size:.85rem; max-height:80px; overflow-y:auto; }
+  .comment-input { display:flex; gap:4px; margin-top:4px; }
+  .comment-input input { flex:1; padding:4px; border-radius:4px; border:1px solid #ccc; }
 
-  /* Lightbox */
+  /* Lightbox plein écran */
   #lightbox {
-    position: fixed; top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.9); display:none; justify-content:center; align-items:center; flex-direction:column;
-    z-index:1000;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    flex-direction: column;
+    padding:20px;
+    color:white;
+    overflow-y:auto;
   }
-  #lightbox img { max-width:90%; max-height:80%; border-radius:8px; box-shadow:0 0 20px #000; }
-  .nav-btn { position:absolute; top:50%; transform:translateY(-50%); font-size:3rem; color:white; cursor:pointer; user-select:none; padding:0 15px; }
-  .nav-left { left:10px; } .nav-right { right:10px; }
-  .close-btn { position:absolute; top:15px; right:20px; font-size:2.5rem; color:white; cursor:pointer; }
+  #lightbox img {
+    max-width: 90%;
+    max-height: 60%;
+    border-radius: 8px;
+    box-shadow: 0 0 20px #000;
+    margin-bottom:15px;
+  }
+  .lightbox-info {
+    width:90%;
+    max-width:700px;
+    text-align:left;
+    background:rgba(255,255,255,0.1);
+    padding:10px;
+    border-radius:8px;
+  }
+  .lightbox-comments { max-height:200px; overflow-y:auto; margin-top:10px; }
+  .lightbox-comment-input { display:flex; gap:6px; margin-top:8px; }
+  .lightbox-comment-input input { flex:1; padding:6px; border-radius:4px; border:none; }
+  .lightbox-comment-input button { background:#FFD700; color:#111; }
 
-  /* Popup pseudo */
-  #nameModal {
-    position: fixed; top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center;
-    z-index:2000;
+  .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3rem;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    padding: 0 15px;
   }
-  #nameModalContent {
-    background:#fff; padding:20px; border-radius:8px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.3);
+  .nav-btn:hover { color: #FFD700; }
+  .nav-left { left: 10px; }
+  .nav-right { right: 10px; }
+  .close-btn {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 2.5rem;
+    color: white;
+    cursor: pointer;
   }
-  #nameModalContent input { padding:8px; border-radius:4px; border:1px solid #ccc; width:80%; margin-top:10px; }
-  #nameModalContent button { margin-top:10px; padding:8px 12px; background:#6F42C1; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+  .close-btn:hover { color: #E74C3C; }
 </style>
 </head>
 <body>
@@ -67,8 +97,10 @@
 
 <div class="upload-section">
   <input type="file" id="photoInput" accept="image/*" multiple />
-  <div class="toolbar"><button id="uploadBtn" type="button">Ajouter</button></div>
-  <div class="hint">Les photos sont compressées (max ~1280px) et stockées en base64 dans la Realtime Database.</div>
+  <div class="toolbar">
+    <button id="uploadBtn" type="button">Ajouter</button>
+  </div>
+  <div class="hint">Les photos sont compressées et stockées en base64 dans la Realtime Database.</div>
   <div id="status"></div>
 </div>
 
@@ -79,16 +111,15 @@
   <span class="close-btn">&times;</span>
   <span class="nav-btn nav-left">&#10094;</span>
   <img src="" alt="Zoom">
-  <span class="nav-btn nav-right">&#10095;</span>
-</div>
-
-<!-- Modal pseudo -->
-<div id="nameModal">
-  <div id="nameModalContent">
-    <h2>Entre ton prénom/pseudo 🎉</h2>
-    <input type="text" id="usernameInput" placeholder="Ton prénom..." />
-    <button id="saveUsername">Valider</button>
+  <div class="lightbox-info">
+    <button class="like-btn" id="lightbox-like">❤️ <span id="lightbox-likes">0</span></button>
+    <div class="lightbox-comments" id="lightbox-comments"></div>
+    <div class="lightbox-comment-input">
+      <input type="text" id="lightbox-comment-text" placeholder="Écrire un commentaire...">
+      <button id="lightbox-comment-send">Envoyer</button>
+    </div>
   </div>
+  <span class="nav-btn nav-right">&#10095;</span>
 </div>
 
 <!-- Firebase -->
@@ -108,136 +139,164 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // Gestion pseudo
-  let username = localStorage.getItem("username");
-  const nameModal = document.getElementById("nameModal");
-  document.getElementById("saveUsername").onclick = () => {
-    const val = document.getElementById("usernameInput").value.trim();
-    if(val) {
-      username = val;
-      localStorage.setItem("username", val);
-      nameModal.style.display = "none";
-    }
-  };
-  if(username) nameModal.style.display = "none";
+  const username = prompt("Entre ton prénom pour la galerie :") || "Invité";
 
   const input   = document.getElementById('photoInput');
   const upload  = document.getElementById('uploadBtn');
   const gallery = document.getElementById('gallery');
+  const statusEl= document.getElementById('status');
 
-  let photos=[], photoKeys=[], currentIndex=0;
+  const lightbox   = document.getElementById('lightbox');
+  const lightboxImg= lightbox.querySelector('img');
+  const closeBtn   = lightbox.querySelector('.close-btn');
+  const leftBtn    = lightbox.querySelector('.nav-left');
+  const rightBtn   = lightbox.querySelector('.nav-right');
+  const lightboxLikes = document.getElementById('lightbox-likes');
+  const lightboxLikeBtn = document.getElementById('lightbox-like');
+  const lightboxComments = document.getElementById('lightbox-comments');
+  const lightboxCommentText = document.getElementById('lightbox-comment-text');
+  const lightboxCommentSend = document.getElementById('lightbox-comment-send');
 
-  function compressImage(file, maxW=1280, maxH=1280, quality=0.8) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const reader = new FileReader();
-      reader.onload = e => { img.src = e.target.result; };
-      reader.onerror = reject;
-      img.onload = () => {
-        const r = Math.min(maxW / img.width, maxH / img.height, 1);
-        const w = Math.round(img.width * r), h = Math.round(img.height * r);
-        const c = document.createElement('canvas');
-        c.width = w; c.height = h;
-        c.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(c.toDataURL('image/jpeg', quality));
+  let photos = []; // tableau [ {key,data}, ... ]
+  let currentIndex = 0;
+
+  function log(msg, isError=false){ statusEl.textContent=msg; }
+
+  function compressImage(file, maxW=1280, maxH=1280, quality=0.8){
+    return new Promise((resolve,reject)=>{
+      const img=new Image();
+      const reader=new FileReader();
+      reader.onload=e=>{img.src=e.target.result;};
+      reader.onerror=reject;
+      img.onload=()=>{
+        const r=Math.min(maxW/img.width, maxH/img.height,1);
+        const w=Math.round(img.width*r), h=Math.round(img.height*r);
+        const c=document.createElement('canvas');
+        c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(c.toDataURL('image/jpeg',quality));
       };
-      img.onerror = reject;
+      img.onerror=reject;
       reader.readAsDataURL(file);
     });
   }
 
-  function renderItem(key, data, index) {
-    const url = data.dataUrl;
-    const div = document.createElement('div');
-    div.className = 'gallery-item';
-    div.innerHTML = `
-      <img src="${url}" data-index="${index}">
-      <div class="actions">
-        <button class="like-btn">❤️</button>
-        <span class="like-count">0</span>
+  function renderItem(key,data,index){
+    const url=data.dataUrl;
+    const name=data.name||"photo";
+    const div=document.createElement("div");
+    div.className="gallery-item";
+    div.dataset.key=key;
+    div.innerHTML=`
+      <img src="${url}" alt="${name}" data-index="${index}">
+      <div class="btn-container">
+        <a class="download-btn" href="${url}" download="${name}.jpg">Télécharger</a>
         <button class="delete-btn">Supprimer</button>
+        <button class="like-btn">❤️ <span>${data.likes||0}</span></button>
       </div>
       <div class="comments"></div>
       <div class="comment-input">
-        <input type="text" placeholder="Ajouter un commentaire...">
+        <input type="text" placeholder="Ton commentaire...">
         <button>Envoyer</button>
       </div>
     `;
-
-    // Like logique
-    const likeBtn = div.querySelector('.like-btn');
-    const likeCount = div.querySelector('.like-count');
-    db.ref('photos/'+key+'/likes').on('value', snap => {
-      const val = snap.val() || {};
-      likeCount.textContent = Object.keys(val).length;
-      likeBtn.style.color = val[username] ? "red" : "black";
-    });
-    likeBtn.onclick = () => {
-      const ref = db.ref('photos/'+key+'/likes/'+username);
-      ref.once('value').then(snap => {
-        if(snap.exists()) ref.remove(); else ref.set(true);
-      });
+    // Supprimer
+    div.querySelector('.delete-btn').onclick=()=>db.ref('photos/'+key).remove();
+    // Like
+    div.querySelector('.like-btn').onclick=()=>{
+      db.ref('photos/'+key+'/likes').transaction(v=>(v||0)+1);
     };
-
-    // Commentaires
-    const commentsEl = div.querySelector('.comments');
-    db.ref('photos/'+key+'/comments').on('value', snap => {
+    // Commentaires en temps réel
+    const commentsEl=div.querySelector('.comments');
+    db.ref('photos/'+key+'/comments').on('value',snap=>{
       commentsEl.innerHTML="";
-      const val = snap.val()||{};
-      Object.values(val).slice(-3).forEach(c=>{
+      const val=snap.val()||{};
+      Object.values(val).forEach(c=>{
         const p=document.createElement('p');
-        p.textContent = c.user+": "+c.text;
+        p.textContent=c.user+": "+c.text;
         commentsEl.appendChild(p);
       });
     });
-    div.querySelector('.comment-input button').onclick = () => {
-      const text = div.querySelector('.comment-input input').value.trim();
-      if(!text) return;
-      db.ref('photos/'+key+'/comments').push({user:username, text});
-      div.querySelector('.comment-input input').value="";
+    // Ajout commentaire
+    const commentInput=div.querySelector('.comment-input input');
+    const commentBtn=div.querySelector('.comment-input button');
+    commentBtn.onclick=()=>{
+      const text=commentInput.value.trim();
+      if(!text)return;
+      db.ref('photos/'+key+'/comments').push({user:username,text});
+      commentInput.value="";
     };
-
-    // Supprimer
-    div.querySelector('.delete-btn').onclick = () => {
-      if(confirm("Supprimer cette photo pour tout le monde ?")) {
-        db.ref('photos/'+key).remove();
-      }
-    };
-
-    // Zoom Lightbox
-    div.querySelector('img').onclick = () => { currentIndex=index; showImage(); };
-
     return div;
   }
 
-  function showImage() {
-    document.getElementById('lightbox').style.display='flex';
-    document.querySelector('#lightbox img').src = photos[currentIndex];
-  }
-  document.querySelector('.close-btn').onclick = () => document.getElementById('lightbox').style.display='none';
-  document.querySelector('.nav-left').onclick = () => { currentIndex=(currentIndex-1+photos.length)%photos.length; showImage(); };
-  document.querySelector('.nav-right').onclick= () => { currentIndex=(currentIndex+1)%photos.length; showImage(); };
-
-  // Charger photos
-  db.ref('photos').orderByChild('createdAt').on('value', snap => {
-    const val = snap.val();
-    gallery.innerHTML=""; photos=[]; photoKeys=[];
-    if(!val) return;
-    Object.entries(val).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0))
-      .forEach(([key,data],i)=>{
-        photos.push(data.dataUrl); photoKeys.push(key);
-        gallery.appendChild(renderItem(key,data,i));
-      });
+  // Chargement
+  db.ref('photos').orderByChild('createdAt').on('value',snap=>{
+    const val=snap.val(); gallery.innerHTML=""; photos=[];
+    if(!val){ log("Aucune photo."); return; }
+    const entries=Object.entries(val).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+    entries.forEach(([key,data],i)=>{ photos.push({key,data}); gallery.appendChild(renderItem(key,data,i)); });
   });
 
-  upload.onclick = async () => {
-    const files=Array.from(input.files||[]);
-    for(const f of files){
-      const dataUrl = await compressImage(f);
-      await db.ref('photos').push({ dataUrl, name:f.name, createdAt:Date.now() });
-    }
-    input.value="";
+  // Upload
+  upload.onclick=async()=>{
+    try{
+      const files=Array.from(input.files||[]);
+      if(!files.length) return log("Sélectionne une photo.");
+      for(const f of files){
+        const dataUrl=await compressImage(f);
+        await db.ref('photos').push({dataUrl,name:f.name,createdAt:Date.now(),likes:0});
+      }
+      log("Upload OK ✅"); input.value="";
+    }catch(e){ log("Erreur: "+e,true); }
   };
+
+  // Lightbox
+  gallery.addEventListener('click',e=>{
+    if(e.target.tagName==="IMG"){
+      currentIndex=parseInt(e.target.dataset.index,10);
+      showImage();
+    }
+  });
+
+  function showImage(){
+    const {key,data}=photos[currentIndex];
+    lightboxImg.src=data.dataUrl;
+    lightbox.style.display="flex";
+    // Likes
+    db.ref('photos/'+key+'/likes').on('value',s=>{
+      lightboxLikes.textContent=s.val()||0;
+    });
+    lightboxLikeBtn.onclick=()=>db.ref('photos/'+key+'/likes').transaction(v=>(v||0)+1);
+    // Comments
+    db.ref('photos/'+key+'/comments').on('value',snap=>{
+      lightboxComments.innerHTML="";
+      const val=snap.val()||{};
+      Object.values(val).forEach(c=>{
+        const p=document.createElement('p');
+        p.textContent=c.user+": "+c.text;
+        lightboxComments.appendChild(p);
+      });
+    });
+    lightboxCommentSend.onclick=()=>{
+      const text=lightboxCommentText.value.trim();
+      if(!text)return;
+      db.ref('photos/'+key+'/comments').push({user:username,text});
+      lightboxCommentText.value="";
+    };
+  }
+
+  closeBtn.onclick=()=>{lightbox.style.display="none";};
+  leftBtn.onclick=()=>{currentIndex=(currentIndex-1+photos.length)%photos.length;showImage();};
+  rightBtn.onclick=()=>{currentIndex=(currentIndex+1)%photos.length;showImage();};
+
+  // Swipe mobile
+  let startX=0;
+  lightbox.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;});
+  lightbox.addEventListener('touchend',e=>{
+    let endX=e.changedTouches[0].clientX;
+    if(startX-endX>50) rightBtn.click();
+    if(endX-startX>50) leftBtn.click();
+  });
 </script>
 
 </body>
