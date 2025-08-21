@@ -8,47 +8,57 @@
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <style>
   :root{
-    --tropics1:#FF6F61; --tropics2:#FFD166; --tropics3:#06D6A0; --tropics4:#118AB2;
-    --tropics5:#EF476F; --tropics6:#83D483; --tropics7:#F4A261; --tropics8:#9B5DE5;
+    /* Pastels doux & thème */
+    --p1:#FFE3EC; --p2:#FFF3C4; --p3:#D6F4FF; --p4:#E8F8EA;
+    --p5:#FDE2E4; --p6:#E7E6FF; --p7:#FBE7C6; --p8:#E4F1F7;
+    --primary:#5a189a;
   }
   .wrap{max-width:980px;margin:0 auto;padding:1rem;text-align:center}
-  h1{font-family:'Pacifico',cursive;color:#f72585;margin:0.5rem 0 0.25rem;text-shadow:1px 1px 4px rgba(0,0,0,.12)}
+  h1{font-family:'Pacifico',cursive;color:#f72585;margin:.5rem 0 .25rem;text-shadow:1px 1px 4px rgba(0,0,0,.12)}
   .sub{opacity:.9;margin-bottom:.75rem}
+
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
   @media(max-width:900px){ .grid{grid-template-columns:1fr} }
 
-  /* Canvas + pointe */
+  /* Cartes */
+  .card,.panel{background:rgba(255,255,255,.2);backdrop-filter:saturate(120%) blur(2px);box-shadow:0 8px 18px rgba(0,0,0,.12);border-radius:16px;padding:14px}
+  .panel{text-align:left}
+  .panel h3{margin:.25rem 0 .5rem;color:#3a0842}
+
+  /* Zone roue */
   .stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px}
-  #wheel{width:100%;max-width:420px;aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.2);box-shadow:0 8px 20px rgba(0,0,0,.15)}
+  #wheel{width:100%;max-width:460px;aspect-ratio:1;border-radius:50%;background:linear-gradient(145deg,rgba(255,255,255,.35),rgba(255,255,255,.15));box-shadow:0 14px 30px rgba(0,0,0,.18), inset 0 4px 12px rgba(255,255,255,.35)}
   .pointer{
-    position:absolute;top:-8px;left:50%;transform:translateX(-50%);
-    width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:24px solid #000;border-radius:3px;
-    filter:drop-shadow(0 3px 6px rgba(0,0,0,.3));
+    position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+    width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:28px solid #111;border-radius:3px;
+    filter:drop-shadow(0 3px 6px rgba(0,0,0,.35));
+    transition: transform .08s ease;
   }
+  .pointer.tick{ transform:translateX(-50%) translateY(-1px); } /* petit "tick" visuel */
 
   .controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-  .btn{background:#5a189a;color:#fff;border:none;border-radius:8px;padding:.55rem .9rem;font-weight:800;cursor:pointer}
+  .btn{background:var(--primary);color:#fff;border:none;border-radius:10px;padding:.6rem .95rem;font-weight:800;cursor:pointer}
   .btn:disabled{opacity:.6;cursor:not-allowed}
-  .ghost{background:transparent;border:2px solid #5a189a;color:#5a189a}
-  .danger{background:#E74C3C}
-  label{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:4px}
+  .ghost{background:transparent;border:2px solid var(--primary);color:var(--primary)}
+  .ok{background:#2ca58d}
 
-  /* Panneau gages */
-  .card{background:rgba(255,255,255,.18);box-shadow:0 6px 14px rgba(0,0,0,.12);border-radius:14px;padding:12px;text-align:left}
-  .card h3{margin:.25rem 0 .5rem;color:#3a0842}
+  /* Gestions gages */
   .row{display:flex;gap:8px;align-items:center}
-  .row input{flex:1;padding:.55rem .7rem;border-radius:8px;border:1px solid rgba(0,0,0,.15);font-weight:600}
+  .row input{flex:1;padding:.58rem .75rem;border-radius:10px;border:1px solid rgba(0,0,0,.15);font-weight:600}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-  .chip{display:flex;align-items:center;gap:6px;background:#fff;color:#3a0842;border-radius:999px;padding:.3rem .6rem;box-shadow:0 2px 6px rgba(0,0,0,.12)}
-  .chip.used{opacity:.55}
+  .chip{display:flex;align-items:center;gap:6px;background:#fff;color:#3a0842;border-radius:999px;padding:.35rem .7rem;box-shadow:0 2px 6px rgba(0,0,0,.12)}
   .chip button{background:transparent;border:none;color:#E74C3C;cursor:pointer;font-weight:900}
-  textarea{width:100%;min-height:110px;padding:.6rem;border-radius:10px;border:1px solid rgba(0,0,0,.15);resize:vertical;font-weight:600}
+
+  .empty{opacity:.85;margin-top:10px}
 
   /* Modale résultat */
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:999}
   .modal.show{display:flex}
-  .modal .box{max-width:560px;margin:20px;background:#fff;border-radius:16px;padding:18px;text-align:center}
-  .result{font-size:1.4rem;font-weight:900;color:#5a189a;margin:.4rem 0 1rem}
+  .modal .box{max-width:560px;margin:20px;background:#fff;border-radius:16px;padding:18px;text-align:center;box-shadow:0 12px 28px rgba(0,0,0,.3)}
+  .result{font-size:1.5rem;font-weight:900;color:var(--primary);margin:.5rem 0 1rem}
+
+  /* Légende de sélection en live sous la roue */
+  .live-label{margin-top:6px;font-weight:900;color:#3a0842;background:rgba(255,255,255,.65);padding:.25rem .6rem;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
 </style>
 </head>
 <body>
@@ -57,42 +67,32 @@
 
 <div class="wrap">
   <h1>Roue des Gages</h1>
-  <div class="sub">Ajoute tes gages, tourne la roue et… bonne chance 😈🌴</div>
+  <div class="sub">Design pastel 🌴 — rotation plus lente 🐢 — gage tiré retiré automatiquement.</div>
 
   <div class="grid">
-    <!-- Zone roue -->
+    <!-- Roue -->
     <section class="card">
       <div class="stage">
-        <div class="pointer"></div>
-        <canvas id="wheel" width="600" height="600" aria-label="Roue des gages"></canvas>
+        <div class="pointer" id="pointer"></div>
+        <canvas id="wheel" width="620" height="620" aria-label="Roue des gages"></canvas>
+        <div id="liveLabel" class="live-label" style="display:none;">—</div>
+        <div id="emptyNote" class="empty" style="display:none;">Aucun gage dans la roue. Ajoute-en à droite, ou clique “Repartir de zéro”.</div>
         <div class="controls">
           <button id="spinBtn" class="btn">🎡 Tourner</button>
           <button id="shuffleBtn" class="btn ghost" title="Mélanger l'ordre">🔀 Mélanger</button>
-          <button id="resetUsedBtn" class="btn ghost" title="Réinitialiser les gages déjà sortis">♻️ Réinitialiser sorties</button>
-          <button id="clearAllBtn" class="btn danger" title="Supprimer tous les gages">🗑️ Vider</button>
+          <button id="resetBtn" class="btn ok" title="Repartir de zéro (liste par défaut)">♻️ Repartir de zéro</button>
         </div>
-        <label><input type="checkbox" id="noRepeat"> Éviter de retomber sur un gage déjà sorti</label>
       </div>
     </section>
 
-    <!-- Zone configuration gages -->
-    <section class="card">
+    <!-- Configuration -->
+    <section class="panel">
       <h3>Gages</h3>
       <div class="row">
         <input id="newItem" type="text" placeholder="Ex: Danse du robot pendant 30s">
         <button id="addBtn" class="btn">+ Ajouter</button>
       </div>
       <div class="chips" id="chips"></div>
-
-      <h3 style="margin-top:12px;">Importer (un par ligne)</h3>
-      <textarea id="bulk" placeholder="Shot d'eau de coco
-Chanter un zouk
-Faire 10 pompes
-Parler créole pendant 1 minute"></textarea>
-      <div class="controls" style="justify-content:flex-start">
-        <button id="bulkAddBtn" class="btn">Importer</button>
-        <button id="exportBtn" class="btn ghost">Exporter</button>
-      </div>
     </section>
   </div>
 </div>
@@ -110,113 +110,113 @@ Parler créole pendant 1 minute"></textarea>
   </div>
 </div>
 
-<!-- (Optionnel) confettis -->
+<!-- Confettis (optionnel) -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 <script>
-/* ========= ÉTAT & PERSISTENCE ========= */
-const LS_ITEMS = 'wheel_items';
-const LS_USED  = 'wheel_used';
+/* ===== Données & persistance ===== */
+const DEFAULT_ITEMS = [
+  'Shot eau de coco',
+  'Danse 30s',
+  'Compliment à la personne de ton choix',
+  'Chanter un zouk',
+  'Faire 10 pompes',
+  'Raconter une blague',
+  'Parler créole 1 min',
+  'Selfie avec 3 personnes',
+];
+const LS_ITEMS = 'wheel_items_pastel_v2';
 
-let items = JSON.parse(localStorage.getItem(LS_ITEMS) || '[]'); // [{text, used:false}]
-let usedMap = JSON.parse(localStorage.getItem(LS_USED)  || '{}'); // {text:true}
-if (!Array.isArray(items)) items = [];
-
-if (items.length === 0){
-  items = [
-    { text:'Shot eau de coco', used:false },
-    { text:'Danse 30s', used:false },
-    { text:'Compliment à la personne de ton choix', used:false },
-    { text:'Chanter un zouk', used:false },
-    { text:'Faire 10 pompes', used:false },
-    { text:'Raconter une blague', used:false },
-    { text:'Parler créole 1 min', used:false },
-    { text:'Selfie avec 3 personnes', used:false },
-  ];
+let items = JSON.parse(localStorage.getItem(LS_ITEMS) || '[]');
+if (!Array.isArray(items) || items.length === 0) {
+  items = [...DEFAULT_ITEMS];
   save();
 }
 
-/* ========= DOM ========= */
+/* ===== DOM ===== */
 const canvas = document.getElementById('wheel');
 const ctx = canvas.getContext('2d');
 const spinBtn = document.getElementById('spinBtn');
 const shuffleBtn = document.getElementById('shuffleBtn');
-const resetUsedBtn = document.getElementById('resetUsedBtn');
-const clearAllBtn = document.getElementById('clearAllBtn');
-const noRepeat = document.getElementById('noRepeat');
+const resetBtn = document.getElementById('resetBtn');
+const emptyNote = document.getElementById('emptyNote');
+const liveLabel = document.getElementById('liveLabel');
+const pointer = document.getElementById('pointer');
 
 const chips = document.getElementById('chips');
 const newItem = document.getElementById('newItem');
 const addBtn = document.getElementById('addBtn');
-const bulk = document.getElementById('bulk');
-const bulkAddBtn = document.getElementById('bulkAddBtn');
-const exportBtn = document.getElementById('exportBtn');
 
 const modal = document.getElementById('modal');
 const resultEl = document.getElementById('result');
 const againBtn = document.getElementById('againBtn');
 const closeModalBtn = document.getElementById('closeModalBtn');
 
-/* ========= UTILS ========= */
-function save(){
-  localStorage.setItem(LS_ITEMS, JSON.stringify(items));
-  localStorage.setItem(LS_USED, JSON.stringify(usedMap));
-}
+/* ===== Utils ===== */
+const pastel = ['#FFE3EC','#FFF3C4','#D6F4FF','#E8F8EA','#FDE2E4','#E7E6FF','#FBE7C6','#E4F1F7'];
+function save(){ localStorage.setItem(LS_ITEMS, JSON.stringify(items)); }
 function rand(min,max){ return Math.random()*(max-min)+min; }
-function shuffle(arr){
-  for(let i=arr.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
-  }
-}
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } }
 
-/* ========= RENDU LISTE ========= */
+/* ===== Rendu chips ===== */
 function renderChips(){
   chips.innerHTML = '';
-  items.forEach((it, idx)=>{
+  items.forEach((text, idx)=>{
     const div = document.createElement('div');
-    div.className = 'chip' + (usedMap[it.text] ? ' used' : '');
-    div.innerHTML = `
-      <span>${it.text}</span>
-      <button title="Supprimer" aria-label="Supprimer">×</button>
-    `;
+    div.className = 'chip';
+    div.innerHTML = `<span>${text}</span><button title="Supprimer">×</button>`;
     div.querySelector('button').onclick = ()=>{
       items.splice(idx,1);
-      delete usedMap[it.text];
-      save();
-      drawWheel();
-      renderChips();
+      save(); drawWheel(); renderChips(); updateEmpty();
     };
     chips.appendChild(div);
   });
 }
 
-/* ========= ROUE ========= */
-const colors = ['#FF6F61','#FFD166','#06D6A0','#118AB2','#EF476F','#83D483','#F4A261','#9B5DE5'];
-
-let angle = 0;        // angle courant en degrés
+/* ===== Roue ===== */
+let angle = 0;           // degrés
 let spinning = false;
+let lastLiveIndex = -1;  // pour le "tick" visuel de la pointe
 
 function drawWheel(){
-  const n = items.length || 1;
-  const cx = canvas.width/2, cy = canvas.height/2, r = Math.min(cx,cy)-8;
+  const n = Math.max(1, items.length);
+  const cx = canvas.width/2, cy = canvas.height/2, r = Math.min(cx,cy)-10;
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  const slice = 360/n;
-  // Décale de -90° pour que la "pointe" vise le haut
-  let start = -90 + angle;
+  // anneau externe
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = 'rgba(0,0,0,.25)';
+  ctx.stroke();
 
+  const slice = 360/n;
+  const start = -90 + angle; // pointe en haut
+
+  // dessiner secteurs
   for(let i=0;i<n;i++){
     const a1 = (start + i*slice) * Math.PI/180;
     const a2 = (start + (i+1)*slice) * Math.PI/180;
 
-    // secteur
+    // secteur fond
+    const grad = ctx.createRadialGradient(cx,cy,r*0.2, cx,cy,r);
+    grad.addColorStop(0, 'rgba(255,255,255,.85)');
+    grad.addColorStop(1, pastel[i % pastel.length]);
+
     ctx.beginPath();
     ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,r,a1,a2);
+    ctx.arc(cx,cy,r-6,a1,a2);
     ctx.closePath();
-    ctx.fillStyle = colors[i % colors.length];
+    ctx.fillStyle = grad;
     ctx.fill();
+
+    // séparateurs
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx + (r-6)*Math.cos(a1), cy + (r-6)*Math.sin(a1));
+    ctx.strokeStyle = 'rgba(0,0,0,.12)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
 
     // texte
     ctx.save();
@@ -224,32 +224,54 @@ function drawWheel(){
     const mid = (a1+a2)/2;
     ctx.rotate(mid);
     ctx.textAlign = 'right';
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#222';
     ctx.font = 'bold 18px sans-serif';
-    const label = items[i]?.text ?? '';
-    wrapText(ctx, label, r-16, 20);
+    ctx.shadowColor = 'rgba(255,255,255,.6)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetY = 2;
+    const label = items[i] || '';
+    wrapText(ctx, label, r-20, 22);
     ctx.restore();
   }
 
-  // cercle centre
+  // centre
   ctx.beginPath();
-  ctx.arc(cx,cy,42,0,Math.PI*2);
-  ctx.fillStyle = 'rgba(255,255,255,.9)';
+  ctx.arc(cx,cy,48,0,Math.PI*2);
+  ctx.fillStyle = 'rgba(255,255,255,.95)';
   ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.12)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
   ctx.fillStyle = '#5a189a';
   ctx.font = 'bold 14px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('La Kaz', cx, cy-2);
   ctx.fillText('à Fête', cx, cy+14);
+
+  // highlight en temps réel du secteur pointé
+  if (items.length > 0){
+    const idx = currentIndexUnderPointer();
+    if (idx >= 0){
+      const a1 = (start + idx*slice) * Math.PI/180;
+      const a2 = (start + (idx+1)*slice) * Math.PI/180;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r-6,a1,a2);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255,255,255,.18)';
+      ctx.fill();
+    }
+  }
 }
 
-function wrapText(ctx, text, x, maxWidth){
+function wrapText(ctx, text, x, lineHeight){
   const words = String(text).split(' ');
   let line = '';
   const lines = [];
   words.forEach(w=>{
     const test = line ? line+' '+w : w;
-    if (ctx.measureText(test).width > maxWidth) {
+    if (ctx.measureText(test).width > (x-24)) {
       if (line) lines.push(line);
       line = w;
     } else {
@@ -257,140 +279,128 @@ function wrapText(ctx, text, x, maxWidth){
     }
   });
   if(line) lines.push(line);
-  const offset = (lines.length-1)*10/2;
-  lines.forEach((l, i)=>{
-    ctx.fillText(l, x, i*20 - offset);
-  });
+  const offset = (lines.length-1)*lineHeight/2;
+  lines.forEach((l,i)=> ctx.fillText(l, x, i*lineHeight - offset));
 }
 
-/* ========= SPIN ========= */
+/* index du secteur sous la pointe (haut) */
+function currentIndexUnderPointer(){
+  if (items.length === 0) return -1;
+  const n = items.length;
+  const slice = 360/n;
+  const norm = ((angle % 360) + 360) % 360;
+  const raw = Math.floor(((360 - norm) % 360) / slice);
+  return (raw + n) % n;
+}
+
+/* ===== Spin & retrait auto ===== */
 function spin(){
   if (spinning || items.length===0) return;
   spinning = true;
   spinBtn.disabled = true;
 
-  const n = items.length;
-  const slice = 360/n;
-
-  // cible aléatoire (plusieurs tours + angle final)
-  const extraTurns = rand(5,8); // tours complets
+  // plus lent : durée plus longue + plus de tours
+  const extraTurns = rand(6, 9);  // tours complets
   const finalAngle = rand(0, 360);
   const target = angle + extraTurns*360 + finalAngle;
 
   const startTime = performance.now();
-  const duration = 3800; // ms
-
-  function easeOut(t){ return 1 - Math.pow(1-t, 3); }
+  const duration = 6500; // ms (plus lent)
+  function easeOutQuint(t){ return 1 - Math.pow(1 - t, 5); }
+  function lerp(a,b,t){ return a + (b-a)*t; }
 
   function animate(now){
     const t = Math.min(1, (now - startTime)/duration);
-    const eased = easeOut(t);
-    angle = lerp(angle, target, eased);
-    drawWheel();
+    angle = lerp(angle, target, easeOutQuint(t));
 
-    if (t < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      angle = target % 360;
-      onSpinEnd();
+    // live label + tick visuel
+    const idx = currentIndexUnderPointer();
+    if (idx !== lastLiveIndex){
+      lastLiveIndex = idx;
+      pointer.classList.remove('tick'); // reflow trick
+      void pointer.offsetWidth;
+      pointer.classList.add('tick');
+
+      if (items[idx]){
+        liveLabel.style.display = 'inline-block';
+        liveLabel.textContent = items[idx];
+      }
     }
+
+    drawWheel();
+    if (t < 1) requestAnimationFrame(animate);
+    else { angle = target % 360; onSpinEnd(); }
   }
   requestAnimationFrame(animate);
-
-  function lerp(a,b,t){ return a + (b-a)*t; }
 }
 
 function onSpinEnd(){
-  const n = items.length;
-  const slice = 360/n;
-  // avec décalage -90°, la pointe regarde 0°
-  // on cherche l'index dont le secteur couvre l'angle 0
-  const norm = (angle % 360 + 360) % 360;          // 0..359
-  const rawIndex = Math.floor(((360 - norm) % 360) / slice);
-  const idx = (rawIndex + n) % n;
-
-  let chosen = items[idx];
-
-  // anti-répétition: si déjà utilisé, on cherche le prochain non utilisé
-  if (noRepeat.checked && chosen && usedMap[chosen.text]) {
-    let found = -1;
-    for (let k=0;k<n;k++){
-      const j = (idx + k) % n;
-      if (!usedMap[items[j].text]) { found = j; break; }
-    }
-    if (found !== -1) {
-      // aligner visuellement ? On laisse tel quel mais on marque le found.
-      chosen = items[found];
-    }
-  }
-
+  const idx = currentIndexUnderPointer();
+  const chosen = items[idx];
   if (chosen){
-    usedMap[chosen.text] = true;
+    showResult(chosen);
+
+    // Retire le gage tiré de la roue
+    items.splice(idx, 1);
     save();
+    drawWheel();
     renderChips();
-    showResult(chosen.text);
-    try { confetti({ particleCount: 90, spread: 70, origin: { y: .6 } }); } catch(e){}
+    updateEmpty();
+
+    // confettis 🎉
+    try { confetti({ particleCount: 120, spread: 70, origin: { y: .6 } }); } catch(e){}
   }
 
+  liveLabel.style.display = items.length ? 'inline-block' : 'none';
   spinning = false;
-  spinBtn.disabled = false;
+  spinBtn.disabled = items.length === 0;
 }
 
-function showResult(text){
-  resultEl.textContent = text;
-  modal.classList.add('show');
+/* ===== UI ===== */
+function updateEmpty(){
+  const empty = items.length === 0;
+  emptyNote.style.display = empty ? 'block' : 'none';
+  spinBtn.disabled = empty;
+  liveLabel.style.display = empty ? 'none' : 'inline-block';
+  if (!empty && items[ currentIndexUnderPointer() ]) {
+    liveLabel.textContent = items[currentIndexUnderPointer()];
+  }
 }
 
-/* ========= EVENTS ========= */
 spinBtn.onclick = spin;
-shuffleBtn.onclick = ()=>{ shuffle(items); save(); drawWheel(); renderChips(); };
-resetUsedBtn.onclick = ()=>{ usedMap = {}; save(); renderChips(); };
-clearAllBtn.onclick = ()=>{
-  if (!confirm('Supprimer tous les gages ?')) return;
-  items = []; usedMap = {}; save(); drawWheel(); renderChips();
+shuffleBtn.onclick = ()=>{ shuffle(items); save(); drawWheel(); renderChips(); updateEmpty(); };
+resetBtn.onclick = ()=>{
+  if (!confirm('Repartir de zéro avec la liste par défaut ?')) return;
+  items = [...DEFAULT_ITEMS];
+  angle = 0;
+  save(); drawWheel(); renderChips(); updateEmpty();
 };
 
 addBtn.onclick = ()=>{
   const t = (newItem.value || '').trim();
   if (!t) return;
-  items.push({text:t, used:false});
+  items.push(t);
   newItem.value = '';
-  save();
-  drawWheel();
-  renderChips();
+  save(); drawWheel(); renderChips(); updateEmpty();
 };
-newItem.addEventListener('keydown', e=>{
-  if (e.key==='Enter') addBtn.click();
-});
+newItem.addEventListener('keydown', e=>{ if(e.key==='Enter') addBtn.click(); });
 
-bulkAddBtn.onclick = ()=>{
-  const lines = (bulk.value || '').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-  if (!lines.length) return;
-  lines.forEach(t=> items.push({text:t, used:false}));
-  bulk.value = '';
-  save();
-  drawWheel();
-  renderChips();
-};
-
-exportBtn.onclick = ()=>{
-  const txt = items.map(it=>it.text).join('\n');
-  navigator.clipboard.writeText(txt).then(()=> {
-    exportBtn.textContent = 'Copié ✅';
-    setTimeout(()=> exportBtn.textContent='Exporter', 1200);
-  });
-};
-
+/* ===== Modale résultat ===== */
+function showResult(text){
+  resultEl.textContent = text;
+  modal.classList.add('show');
+}
 againBtn.onclick = ()=>{ modal.classList.remove('show'); spin(); };
 closeModalBtn.onclick = ()=>{ modal.classList.remove('show'); };
-modal.addEventListener('click', e=>{ if (e.target===modal) modal.classList.remove('show'); });
+modal.addEventListener('click', e=>{ if(e.target===modal) modal.classList.remove('show'); });
 document.addEventListener('keydown', e=>{
   if (e.key==='Escape') modal.classList.remove('show');
 });
 
-/* ========= INIT ========= */
+/* ===== Init ===== */
 renderChips();
 drawWheel();
+updateEmpty();
 </script>
 </body>
 </html>
