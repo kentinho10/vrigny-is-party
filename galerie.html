@@ -18,38 +18,34 @@
   .hint { font-size:.9rem; color:#666; margin-top:.5rem; }
   #status { margin:.75rem auto; max-width:900px; font-size:.95rem; color:#6F42C1; }
 
-  .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin-top:1rem; }
-  .gallery-item { background:#fff; padding:4px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.2); }
+  .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; margin-top:1rem; }
+  .gallery-item { background:#fff; padding:8px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.2); display:flex; flex-direction:column; align-items:center; }
   .gallery-item img { width:100%; height:200px; object-fit:cover; border-radius:6px; cursor:pointer; }
-  .btn-container { margin-top:4px; display:flex; gap:4px; }
-  .download-btn, .delete-btn { flex:1; padding:.3rem .5rem; font-size:.85rem; border:none; border-radius:5px; cursor:pointer; font-weight:600; text-decoration:none; text-align:center; }
-  .download-btn { background:#FFD700; color:#111; }
-  .delete-btn { background:#E74C3C; color:#fff; }
+  
+  /* Interaction */
+  .actions { display:flex; gap:10px; align-items:center; margin-top:6px; }
+  .like-btn { background:none; border:none; cursor:pointer; font-size:1.4rem; }
+  .like-count { font-weight:bold; color:#E74C3C; }
+  .delete-btn { margin-left:auto; padding:3px 6px; background:#E74C3C; color:white; border:none; border-radius:4px; cursor:pointer; }
+
+  .comments { text-align:left; width:100%; max-height:100px; overflow-y:auto; margin-top:6px; font-size:.9rem; }
+  .comments p { margin:2px 0; }
+  .comment-input { display:flex; margin-top:6px; gap:4px; width:100%; }
+  .comment-input input { flex:1; padding:5px; border-radius:4px; border:1px solid #ccc; }
+  .comment-input button { padding:5px 8px; background:#FFD700; border:none; border-radius:4px; cursor:pointer; }
+
   .back-btn { display:block; margin:1rem auto; padding:.5rem 1rem; background:#000; color:#fff; text-decoration:none; border-radius:5px; width:120px; }
-  .toolbar { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:.5rem; }
 
   /* Lightbox */
   #lightbox {
     position: fixed; top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.9);
-    display:none; justify-content:center; align-items:center; flex-direction:column;
+    background: rgba(0,0,0,0.9); display:none; justify-content:center; align-items:center; flex-direction:column;
     z-index:1000;
   }
-  #lightbox img { max-width:90%; max-height:60%; border-radius:8px; box-shadow:0 0 20px #000; }
+  #lightbox img { max-width:90%; max-height:80%; border-radius:8px; box-shadow:0 0 20px #000; }
   .nav-btn { position:absolute; top:50%; transform:translateY(-50%); font-size:3rem; color:white; cursor:pointer; user-select:none; padding:0 15px; }
-  .nav-btn:hover { color:#FFD700; }
-  .nav-left { left:10px; }
-  .nav-right { right:10px; }
+  .nav-left { left:10px; } .nav-right { right:10px; }
   .close-btn { position:absolute; top:15px; right:20px; font-size:2.5rem; color:white; cursor:pointer; }
-  .close-btn:hover { color:#E74C3C; }
-
-  /* Likes + commentaires */
-  .like-btn { background:none; border:none; cursor:pointer; font-size:1.5rem; }
-  .like-count { color:#FFD700; font-weight:bold; margin-left:5px; }
-  .comments { text-align:left; color:#fff; max-height:150px; overflow-y:auto; margin-top:10px; width:80%; }
-  .comment-input { display:flex; margin-top:10px; gap:5px; }
-  .comment-input input { flex:1; padding:5px; border-radius:4px; border:none; }
-  .comment-input button { padding:5px 10px; background:#FFD700; border:none; border-radius:4px; cursor:pointer; }
 
   /* Popup pseudo */
   #nameModal {
@@ -58,8 +54,7 @@
     z-index:2000;
   }
   #nameModalContent {
-    background:#fff; padding:20px; border-radius:8px; text-align:center;
-    box-shadow:0 2px 10px rgba(0,0,0,0.3);
+    background:#fff; padding:20px; border-radius:8px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.3);
   }
   #nameModalContent input { padding:8px; border-radius:4px; border:1px solid #ccc; width:80%; margin-top:10px; }
   #nameModalContent button { margin-top:10px; padding:8px 12px; background:#6F42C1; color:#fff; border:none; border-radius:5px; cursor:pointer; }
@@ -85,12 +80,6 @@
   <span class="nav-btn nav-left">&#10094;</span>
   <img src="" alt="Zoom">
   <span class="nav-btn nav-right">&#10095;</span>
-  <button class="like-btn">❤️</button><span class="like-count">0</span>
-  <div class="comments" id="comments"></div>
-  <div class="comment-input">
-    <input type="text" id="commentText" placeholder="Ajouter un commentaire...">
-    <button id="sendComment">Envoyer</button>
-  </div>
 </div>
 
 <!-- Modal pseudo -->
@@ -119,10 +108,10 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
+  // Gestion pseudo
   let username = localStorage.getItem("username");
   const nameModal = document.getElementById("nameModal");
-  const saveUsernameBtn = document.getElementById("saveUsername");
-  saveUsernameBtn.onclick = () => {
+  document.getElementById("saveUsername").onclick = () => {
     const val = document.getElementById("usernameInput").value.trim();
     if(val) {
       username = val;
@@ -135,19 +124,8 @@
   const input   = document.getElementById('photoInput');
   const upload  = document.getElementById('uploadBtn');
   const gallery = document.getElementById('gallery');
-  const statusEl= document.getElementById('status');
-  const lightbox   = document.getElementById('lightbox');
-  const lightboxImg= lightbox.querySelector('img');
-  const closeBtn   = lightbox.querySelector('.close-btn');
-  const leftBtn    = lightbox.querySelector('.nav-left');
-  const rightBtn   = lightbox.querySelector('.nav-right');
-  const likeBtn    = lightbox.querySelector('.like-btn');
-  const likeCount  = lightbox.querySelector('.like-count');
-  const commentsEl = document.getElementById("comments");
-  const commentText= document.getElementById("commentText");
-  const sendComment= document.getElementById("sendComment");
 
-  let photos = [], currentIndex = 0, photoKeys = [];
+  let photos=[], photoKeys=[], currentIndex=0;
 
   function compressImage(file, maxW=1280, maxH=1280, quality=0.8) {
     return new Promise((resolve, reject) => {
@@ -169,72 +147,91 @@
   }
 
   function renderItem(key, data, index) {
-    const url  = data.dataUrl;
-    const name = data.name || 'photo';
-    const div  = document.createElement('div');
+    const url = data.dataUrl;
+    const div = document.createElement('div');
     div.className = 'gallery-item';
-    div.innerHTML = `<img src="${url}" alt="${name}" data-index="${index}">`;
-    div.querySelector('img').onclick = () => { currentIndex=index; showImage(); };
-    return div;
-  }
+    div.innerHTML = `
+      <img src="${url}" data-index="${index}">
+      <div class="actions">
+        <button class="like-btn">❤️</button>
+        <span class="like-count">0</span>
+        <button class="delete-btn">Supprimer</button>
+      </div>
+      <div class="comments"></div>
+      <div class="comment-input">
+        <input type="text" placeholder="Ajouter un commentaire...">
+        <button>Envoyer</button>
+      </div>
+    `;
 
-  function showImage() {
-    const key = photoKeys[currentIndex];
-    const url = photos[currentIndex];
-    lightboxImg.src = url;
-    lightbox.style.display = 'flex';
-    // Charger likes
+    // Like logique
+    const likeBtn = div.querySelector('.like-btn');
+    const likeCount = div.querySelector('.like-count');
     db.ref('photos/'+key+'/likes').on('value', snap => {
       const val = snap.val() || {};
       likeCount.textContent = Object.keys(val).length;
-      likeBtn.style.color = val[username] ? "red" : "white";
+      likeBtn.style.color = val[username] ? "red" : "black";
     });
-    // Charger commentaires
+    likeBtn.onclick = () => {
+      const ref = db.ref('photos/'+key+'/likes/'+username);
+      ref.once('value').then(snap => {
+        if(snap.exists()) ref.remove(); else ref.set(true);
+      });
+    };
+
+    // Commentaires
+    const commentsEl = div.querySelector('.comments');
     db.ref('photos/'+key+'/comments').on('value', snap => {
-      commentsEl.innerHTML = "";
-      const val = snap.val() || {};
-      Object.values(val).forEach(c => {
-        const p = document.createElement("p");
+      commentsEl.innerHTML="";
+      const val = snap.val()||{};
+      Object.values(val).slice(-3).forEach(c=>{
+        const p=document.createElement('p');
         p.textContent = c.user+": "+c.text;
         commentsEl.appendChild(p);
       });
     });
+    div.querySelector('.comment-input button').onclick = () => {
+      const text = div.querySelector('.comment-input input').value.trim();
+      if(!text) return;
+      db.ref('photos/'+key+'/comments').push({user:username, text});
+      div.querySelector('.comment-input input').value="";
+    };
+
+    // Supprimer
+    div.querySelector('.delete-btn').onclick = () => {
+      if(confirm("Supprimer cette photo pour tout le monde ?")) {
+        db.ref('photos/'+key).remove();
+      }
+    };
+
+    // Zoom Lightbox
+    div.querySelector('img').onclick = () => { currentIndex=index; showImage(); };
+
+    return div;
   }
 
-  likeBtn.onclick = () => {
-    const key = photoKeys[currentIndex];
-    const ref = db.ref('photos/'+key+'/likes/'+username);
-    ref.once('value').then(snap => {
-      if(snap.exists()) ref.remove(); else ref.set(true);
-    });
-  };
+  function showImage() {
+    document.getElementById('lightbox').style.display='flex';
+    document.querySelector('#lightbox img').src = photos[currentIndex];
+  }
+  document.querySelector('.close-btn').onclick = () => document.getElementById('lightbox').style.display='none';
+  document.querySelector('.nav-left').onclick = () => { currentIndex=(currentIndex-1+photos.length)%photos.length; showImage(); };
+  document.querySelector('.nav-right').onclick= () => { currentIndex=(currentIndex+1)%photos.length; showImage(); };
 
-  sendComment.onclick = () => {
-    const text = commentText.value.trim();
-    if(!text) return;
-    const key = photoKeys[currentIndex];
-    db.ref('photos/'+key+'/comments').push({user:username, text});
-    commentText.value = "";
-  };
-
-  closeBtn.onclick = () => lightbox.style.display = 'none';
-  leftBtn.onclick  = () => { currentIndex=(currentIndex-1+photos.length)%photos.length; showImage(); };
-  rightBtn.onclick = () => { currentIndex=(currentIndex+1)%photos.length; showImage(); };
-
+  // Charger photos
   db.ref('photos').orderByChild('createdAt').on('value', snap => {
     const val = snap.val();
-    gallery.innerHTML = ''; photos=[]; photoKeys=[];
-    if (!val) return;
-    const entries = Object.entries(val).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
-    entries.forEach(([key, data], i) => {
-      photos.push(data.dataUrl); photoKeys.push(key);
-      gallery.appendChild(renderItem(key, data, i));
-    });
+    gallery.innerHTML=""; photos=[]; photoKeys=[];
+    if(!val) return;
+    Object.entries(val).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0))
+      .forEach(([key,data],i)=>{
+        photos.push(data.dataUrl); photoKeys.push(key);
+        gallery.appendChild(renderItem(key,data,i));
+      });
   });
 
   upload.onclick = async () => {
-    const files = Array.from(input.files || []);
-    if (!files.length) return;
+    const files=Array.from(input.files||[]);
     for(const f of files){
       const dataUrl = await compressImage(f);
       await db.ref('photos').push({ dataUrl, name:f.name, createdAt:Date.now() });
