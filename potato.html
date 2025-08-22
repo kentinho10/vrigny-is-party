@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Effet Explosion – Patate Chaude</title>
+  <meta name="description" content="Démonstration autonome de l'effet d'explosion pour Hot Potato. HTML/CSS/JS sans dépendances.">
+  <style>
+    :root{
+      --bg:#0f1020; --panel:#151A36; --panel2:#1b1f47; --text:#e9ecff; --muted:#a7b0d9; --accent:#8ab4ff; --accent2:#7df9c9; --danger:#ff7b9c; --radius:18px; --shadow:0 14px 30px rgba(0,0,0,.35)
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; background:radial-gradient(1100px 700px at 10% 0%, #16193a 0%, #0f1020 60%, #0c0d19 100%); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial}
+    .container{max-width:1100px; margin:24px auto; padding:16px}
+    header{display:grid; grid-template-columns:1fr auto; gap:12px; align-items:end}
+    h1{margin:0; font-size:clamp(24px,3vw,40px)}
+    .muted{color:var(--muted)}
+    .card{background:linear-gradient(135deg,var(--panel),var(--panel2)); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .card .hd{display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.08); color:var(--muted)}
+    .card .bd{padding:16px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .field{display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.10); padding:8px 10px; border-radius:12px}
+    .field input{background:transparent; border:0; outline:0; color:var(--text)}
+    .btn{--bg:#22265c; background:var(--bg); color:var(--text); border:1px solid rgba(255,255,255,.12); padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:800; box-shadow:var(--shadow); transition:.15s transform ease}
+    .btn:hover{transform:translateY(-1px)} .btn:active{transform:translateY(0)}
+    .btn.acc{--bg:linear-gradient(135deg,var(--accent),var(--accent2)); color:#0b0f20; border:0}
+    .btn.ghost{background:transparent; border:1px dashed rgba(255,255,255,.25)}
+
+    .arena{position:relative; height:58vh; min-height:360px; display:grid; place-items:center}
+    .potato{position:absolute; width:90px; height:90px; border-radius:999px; background:radial-gradient(circle at 35% 35%, #f9dca7 0%, #e6b067 60%, #c68a3d 100%); box-shadow:0 14px 28px rgba(0,0,0,.35); display:grid; place-items:center; font-size:48px; user-select:none; cursor:pointer; transition:.15s transform ease}
+    .potato:hover{transform:scale(1.03)}
+
+    /* Overlay BOOM */
+    .boom{position:absolute; inset:0; display:grid; place-items:center; pointer-events:none; opacity:0; transition:.25s}
+    .boom.active{opacity:1}
+    .boom .banner{background:rgba(6,8,24,.85); border:1px solid rgba(255,255,255,.15); padding:18px 22px; border-radius:16px; box-shadow:var(--shadow); text-align:center}
+    .boom .banner h2{margin:0; font-size:34px}
+    .boom .banner p{margin:6px 0 0; color:var(--muted)}
+
+    /* Particules */
+    .particle{position:absolute; width:14px; height:14px; border-radius:999px; background:radial-gradient(circle at 30% 30%, #ffd27a 0%, #f39b2f 60%, #c86c1c 100%); will-change: transform, opacity}
+
+    /* Effets d'explosion */
+    .flash{position:absolute; inset:0; background:radial-gradient(circle, rgba(255,255,255,.28) 0%, rgba(255,255,255,0) 60%); opacity:0; pointer-events:none}
+    .flash.on{animation:flash .45s ease}
+    @keyframes flash{0%{opacity:.9} 100%{opacity:0}}
+
+    .shake{animation:shake .4s ease}
+    @keyframes shake{10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0);} 30%, 50%, 70% { transform: translate3d(-4px, 0, 0);} 40%, 60% { transform: translate3d(4px, 0, 0);} }
+
+    .grow-red{animation:grow 280ms ease-in forwards}
+    @keyframes grow{0%{transform:scale(1); filter:saturate(1)} 80%{transform:scale(1.55); filter:hue-rotate(-25deg) saturate(1.6)} 100%{transform:scale(1.7); filter:hue-rotate(-35deg) saturate(1.9)} }
+
+    .toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:#0f1230; border:1px solid rgba(255,255,255,.15); padding:10px 14px; border-radius:10px; color:var(--text); box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:.2s}
+    .toast.show{opacity:1}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Explosion de Patate <span class="muted">(démo autonome)</span></h1>
+        <p class="muted">Clique sur la patate pour déclencher une <strong>explosion visuelle + sonore</strong>. Tu peux injecter un nom de joueur puis « Exploser ».</p>
+      </div>
+      <div class="row">
+        <label class="field"><span>Joueur</span><input id="player" type="text" placeholder="ex: Paul" aria-label="Nom du joueur"></label>
+        <button class="btn acc" id="boomBtn">💥 Exploser</button>
+        <button class="btn ghost" id="resetBtn">Réinitialiser</button>
+      </div>
+    </header>
+
+    <section class="card" style="margin-top:12px">
+      <div class="hd"><strong>Zone de test</strong><span class="muted">Effet réutilisable en 1 fonction JS</span></div>
+      <div class="bd">
+        <div class="arena" id="arena">
+          <div class="potato" id="potato" role="button" aria-label="Patate" title="Clique pour exploser">🥔</div>
+          <div class="flash" id="flash"></div>
+          <div class="boom" id="boom" aria-live="assertive" aria-atomic="true">
+            <div class="banner">
+              <h2 id="boomTitle">💥 BOUM !</h2>
+              <p id="boomMsg" class="muted">La patate a explosé !</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="muted" style="margin-top:10px">Astuce : copie uniquement le <strong>script</strong> et les styles <em>flash/particle/grow-red/shake</em> pour l'intégrer à ton jeu existant.</p>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">OK</div>
+
+  <script>
+    const $ = s=>document.querySelector(s);
+
+    // —— Effet principal : explosionPatate({ originEl, nomJoueur }) ——
+    async function explosionPatate({ originEl, nomJoueur }){
+      const arena = $('#arena');
+      const flash = $('#flash');
+      const boom = $('#boom');
+      const boomTitle = $('#boomTitle');
+      const boomMsg = $('#boomMsg');
+
+      // Position de départ (centre de l'élément d'origine)
+      const r = originEl.getBoundingClientRect();
+      const a = arena.getBoundingClientRect();
+      const x = r.left - a.left + r.width/2;
+      const y = r.top - a.top + r.height/2;
+
+      // 1) Pré-anim : grossir + rougir
+      originEl.classList.add('grow-red');
+
+      // 2) Flash + tremblement de l'arène
+      setTimeout(()=>{
+        flash.classList.remove('on'); void flash.offsetWidth; // restart animation
+        flash.classList.add('on');
+        arena.classList.add('shake');
+        setTimeout(()=> arena.classList.remove('shake'), 420);
+      }, 140);
+
+      // 3) Particules
+      const N = 28; // nombre de fragments
+      for(let i=0;i<N;i++){
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = x+'px'; p.style.top = y+'px';
+        arena.appendChild(p);
+        animateParticle(p);
+      }
+
+      // 4) Vibration (mobile)
+      try{ if(navigator.vibrate){ navigator.vibrate([60,40,60]); } }catch(e){}
+
+      // 5) Son d'explosion (WebAudio, sans fichier)
+      boomSound();
+
+      // 6) Overlay BOOM
+      boomTitle.textContent = '💥 BOUM !';
+      boomMsg.textContent = nomJoueur ? `${nomJoueur} a explosé avec la patate !` : 'La patate a explosé !';
+      boom.classList.add('active');
+
+      // 7) Nettoyage + retour de l'élément
+      await wait(650);
+      originEl.classList.remove('grow-red');
+      await wait(600);
+      boom.classList.remove('active');
+    }
+
+    function animateParticle(el){
+      const angle = Math.random()*Math.PI*2;
+      const dist = 80 + Math.random()*180; // px
+      const dx = Math.cos(angle)*dist;
+      const dy = Math.sin(angle)*dist;
+      const rot = (Math.random()*720-360)|0;
+      const scale = 0.8 + Math.random()*0.8;
+      el.animate([
+        { transform:`translate(0,0) scale(1) rotate(0deg)`, opacity:1 },
+        { transform:`translate(${dx}px, ${dy}px) scale(${scale}) rotate(${rot}deg)`, opacity:0 }
+      ], { duration: 720 + Math.random()*280, easing:'cubic-bezier(.2,.7,.1,1)', fill:'forwards' })
+      .finished.then(()=> el.remove());
+    }
+
+    function boomSound(){
+      try{
+        const AC = window.AudioContext||window.webkitAudioContext; const ac = new AC();
+        const o = ac.createOscillator(); const g = ac.createGain(); const n = ac.createBufferSource();
+        // petit bruit blanc court pour l'impact
+        const buf = ac.createBuffer(1, ac.sampleRate*0.12, ac.sampleRate);
+        const data = buf.getChannelData(0);
+        for(let i=0;i<data.length;i++){ data[i] = (Math.random()*2-1)*Math.pow(1-i/data.length, 2); }
+        n.buffer = buf;
+        // oscillateur grave qui descend
+        o.type='sawtooth'; o.frequency.setValueAtTime(180, ac.currentTime); o.frequency.exponentialRampToValueAtTime(60, ac.currentTime+0.25);
+        g.gain.setValueAtTime(0.0001, ac.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.4, ac.currentTime+0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+0.35);
+        o.connect(g); n.connect(g); g.connect(ac.destination);
+        o.start(); n.start(); o.stop(ac.currentTime+0.36);
+      }catch(e){ /* silencieux si bloqué */ }
+    }
+
+    const wait = ms => new Promise(r=> setTimeout(r, ms));
+
+    // —— Démo ——
+    const potato = $('#potato');
+    potato.style.left = '50%'; potato.style.top = '50%'; potato.style.transform = 'translate(-50%,-50%)';
+
+    potato.addEventListener('click', ()=> explosionPatate({ originEl:potato, nomJoueur: $('#player').value.trim() }));
+    $('#boomBtn').addEventListener('click', ()=> explosionPatate({ originEl:potato, nomJoueur: $('#player').value.trim() }));
+    $('#resetBtn').addEventListener('click', ()=> resetDemo());
+
+    function resetDemo(){
+      const arena = $('#arena');
+      $('#boom').classList.remove('active'); $('#flash').classList.remove('on');
+      document.querySelectorAll('.particle').forEach(p=> p.remove());
+      ping('Réinitialisé');
+    }
+
+    function ping(msg){ const t=$('#toast'); t.textContent=msg||'OK'; t.classList.add('show'); setTimeout(()=> t.classList.remove('show'), 1100); }
+  </script>
+</body>
+</html>
