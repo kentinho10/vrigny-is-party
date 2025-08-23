@@ -44,12 +44,7 @@
       color: transparent;
       text-shadow: 1px 2px 4px rgba(0,0,0,0.1);
       cursor: pointer;
-
-      /* pour fiabiliser l'easter egg */
       user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
     }
     .hero {
       margin-top: 0;
@@ -159,6 +154,8 @@
         <a href="programme.html" class="cta-btn">Programme</a>
         <a href="classement.html" class="cta-btn">Classement</a>
         <a href="roue-des-gages.html" class="cta-btn">La Kaz’Roue</a>
+        <!-- Nouveau bouton -->
+        <a href="galerie.html" class="cta-btn">Galerie</a>
       </div>
 
       <!-- Teaser et Compte à rebours -->
@@ -195,7 +192,7 @@
   </div>
 
   <script>
-    // Date cible : 22 août 2025 à 20h (mois indexé à 0)
+    // Date cible : 22 août 2025 à 20h
     const target = new Date(2025, 7, 22, 20, 0, 0);
 
     function updateCountdown() {
@@ -224,57 +221,14 @@
       updateCountdown();
       window.timer = setInterval(updateCountdown, 1000);
 
-      // Relance la vidéo de fond au retour sur la page
+      // Relance la vidéo de fond
       const bg = document.getElementById('bg-video');
       window.addEventListener('pageshow', () => bg.play().catch(() => {}));
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) bg.play().catch(() => {});
       });
 
-      // ===== Easter egg robuste : triple tap/clic (<= 900 ms) + appui long (700 ms) =====
-      const title = document.querySelector('.title');
-      const goSecret = () => { window.location.href = 'galerie.html'; };
-
-      let pressTimes = [];   // timestamps des taps/clics récents
-      let longPressTimer = null;
-      let startX = 0, startY = 0, moved = false;
-
-      // Utilise Pointer Events (desktop + mobile)
-      title.addEventListener('pointerdown', (e) => {
-        moved = false;
-        startX = e.clientX;
-        startY = e.clientY;
-        // appui long
-        clearTimeout(longPressTimer);
-        longPressTimer = setTimeout(goSecret, 700);
-      });
-
-      title.addEventListener('pointermove', (e) => {
-        const dx = (e.clientX - startX);
-        const dy = (e.clientY - startY);
-        if (Math.hypot(dx, dy) > 10) {
-          moved = true;
-          clearTimeout(longPressTimer);
-        }
-      });
-
-      title.addEventListener('pointerup', (e) => {
-        clearTimeout(longPressTimer);
-        if (moved) return; // on ne compte pas un glissement
-        const now = performance.now();
-        // garde les taps dans une fenêtre glissante de 900 ms
-        pressTimes = pressTimes.filter(t => now - t < 900);
-        pressTimes.push(now);
-        if (pressTimes.length >= 3) {
-          pressTimes = []; // reset pour éviter des doublons
-          goSecret();
-        }
-      });
-
-      title.addEventListener('pointercancel', () => clearTimeout(longPressTimer));
-      title.addEventListener('pointerleave', () => clearTimeout(longPressTimer));
-
-      // ===== Overlay affiche via l'image des têtes =====
+      // Tête -> ouvre l'overlay affiche
       const head = document.getElementById('head');
       const overlay = document.getElementById('overlay');
       const closeBtn = overlay.querySelector('.close-btn');
@@ -289,7 +243,6 @@
         setTimeout(() => overlay.style.display = 'none', 280);
       }
 
-      // Fermer overlay
       closeBtn.addEventListener('click', closeOverlay);
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) closeOverlay();
