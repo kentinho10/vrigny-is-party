@@ -7,7 +7,7 @@
 
   <!-- Styles globaux -->
   <link rel="stylesheet" href="style.css">
-  <!-- Polices : Pacifico pour le titre, Orbitron pour les chiffres -->
+  <!-- Polices -->
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Orbitron&display=swap" rel="stylesheet">
 
   <style>
@@ -44,6 +44,10 @@
       color: transparent;
       text-shadow: 1px 2px 4px rgba(0,0,0,0.1);
       cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .hero {
       margin-top: 0;
@@ -152,7 +156,6 @@
       <div class="cta-buttons">
         <a href="programme.html" class="cta-btn">Programme</a>
         <a href="classement.html" class="cta-btn">Classement</a>
-        <!-- NOUVEAU BOUTON -->
         <a href="roue-des-gages.html" class="cta-btn">La Kaz’Roue</a>
       </div>
 
@@ -177,7 +180,7 @@
         </div>
       </div>
 
-      <!-- Tête qui se balance (sous le compteur) -->
+      <!-- Tête qui se balance -->
       <img src="tetes.png" alt="Les têtes" class="swing-head" id="head">
 
     </section>
@@ -190,27 +193,24 @@
   </div>
 
   <script>
-    // Date cible : 22 août 2025 à 20h (mois indexé à 0)
+    // Date cible : 22 août 2025 à 20h
     const target = new Date(2025, 7, 22, 20, 0, 0);
 
     function updateCountdown() {
       const now  = new Date();
       const diff = target - now;
-
       if (diff <= 0) {
         document.querySelector('.countdown-teaser').style.display = 'none';
-        document.querySelector('.countdown').style.display        = 'none';
+        document.querySelector('.countdown').style.display = 'none';
         clearInterval(timer);
         return;
       }
-
       const days    = Math.floor(diff / 1000 / 60 / 60 / 24);
       const hours   = Math.floor((diff / 1000 / 60 / 60) % 24);
       const minutes = Math.floor((diff / 1000 / 60) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
-
-      document.getElementById('days').textContent    = days;
-      document.getElementById('hours').textContent   = String(hours).padStart(2,'0');
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = String(hours).padStart(2,'0');
       document.getElementById('minutes').textContent = String(minutes).padStart(2,'0');
       document.getElementById('seconds').textContent = String(seconds).padStart(2,'0');
     }
@@ -219,17 +219,19 @@
       updateCountdown();
       window.timer = setInterval(updateCountdown, 1000);
 
-      // Relance la vidéo de fond au retour sur la page
+      // Relance vidéo
       const bg = document.getElementById('bg-video');
       window.addEventListener('pageshow', () => bg.play().catch(() => {}));
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) bg.play().catch(() => {});
       });
 
-      // Easter egg : triple clic sur le titre -> galerie
+      // Easter egg (triple clic ou appui long)
       const title = document.querySelector('.title');
       let clickCount = 0;
       let timerClick;
+      let pressTimer;
+
       title.addEventListener('click', () => {
         clickCount++;
         if (clickCount === 3) {
@@ -238,33 +240,35 @@
           clearTimeout(timerClick);
         } else {
           clearTimeout(timerClick);
-          timerClick = setTimeout(() => clickCount = 0, 1000);
+          timerClick = setTimeout(() => clickCount = 0, 1200);
         }
       });
 
-      // Tête -> ouvre l'overlay affiche
+      title.addEventListener('mousedown', () => {
+        pressTimer = setTimeout(() => { window.location.href = "galerie.html"; }, 800);
+      });
+      title.addEventListener('mouseup', () => clearTimeout(pressTimer));
+      title.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+      title.addEventListener('touchstart', () => {
+        pressTimer = setTimeout(() => { window.location.href = "galerie.html"; }, 800);
+      });
+      title.addEventListener('touchend', () => clearTimeout(pressTimer));
+
+      // Overlay affiche
       const head = document.getElementById('head');
       const overlay = document.getElementById('overlay');
       const closeBtn = overlay.querySelector('.close-btn');
-
       head.addEventListener('click', () => {
         overlay.style.display = 'flex';
         setTimeout(() => overlay.classList.add('show'), 10);
       });
-
       function closeOverlay() {
         overlay.classList.remove('show');
         setTimeout(() => overlay.style.display = 'none', 280);
       }
-
-      // Fermer overlay
       closeBtn.addEventListener('click', closeOverlay);
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closeOverlay();
-      });
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && overlay.style.display === 'flex') closeOverlay();
-      });
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display === 'flex') closeOverlay(); });
     });
   </script>
 
